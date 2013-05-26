@@ -19,5 +19,5 @@ local.properties
 .classpath
 .project
 
-# idea project files
-.idea/
+# idea project user specific files
+.idea/workspace.xml
