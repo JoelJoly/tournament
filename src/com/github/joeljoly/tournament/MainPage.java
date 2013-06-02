@@ -2,9 +2,11 @@ package com.github.joeljoly.tournament;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
@@ -16,13 +18,14 @@ public class MainPage extends Activity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        ScrollView playersScrollView = (ScrollView)findViewById(R.id.scrollView);
-        LinearLayout playersLayout = new LinearLayout(this);
-        playersLayout.setOrientation(LinearLayout.VERTICAL);
-        playersScrollView.addView(playersLayout);
-        PlayerWidget player1 = new PlayerWidget(playersLayout.getContext());
-        playersLayout.addView(player1);
-        PlayerWidget player2 = new PlayerWidget(playersLayout.getContext());
-        playersLayout.addView(player2);
+
+        final Button managePlayersButton = (Button) findViewById(R.id.managePlayersButton);
+        managePlayersButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                Intent managePlayersIntent;
+                managePlayersIntent = new Intent(MainPage.this, PlayerManagement.class);
+                MainPage.this.startActivity(managePlayersIntent);
+            }
+        });
     }
 }
