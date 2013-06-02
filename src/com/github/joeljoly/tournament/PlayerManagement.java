@@ -2,10 +2,13 @@ package com.github.joeljoly.tournament;
 
 import android.app.ActionBar;
 import android.app.AlertDialog;
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
@@ -15,10 +18,7 @@ import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.*;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
-import android.widget.ListView;
+import android.widget.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,11 +34,12 @@ import java.util.HashMap;
 public class PlayerManagement extends FragmentActivity
         implements LoaderManager.LoaderCallbacks<Cursor>
 {
-    LinearLayout playersLayout;
-    Class parentIntent;
-    HashMap<Integer, PlayerWidget> idToWidget;
+    private LinearLayout playersLayout;
+    private Class parentIntent;
+    private HashMap<Integer, PlayerWidget> idToWidget;
     private static final int PLAYERS_LIST_LOADER = 0x01;
     private SimpleCursorAdapter adapter;
+    private ScrollView playersScrollView;
 
     private interface ActionsDialogFragmentListener {
         public void onActionClick(int which);
@@ -77,9 +78,18 @@ public class PlayerManagement extends FragmentActivity
             return view;
         }
     }
+
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.player_management);
+
+        // Get the intent, verify the action and get the query
+        Intent intent = getIntent();
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            String query = intent.getStringExtra(SearchManager.QUERY);
+//            doMySearch(query);
+        }
+
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         Bundle activityParameters;
@@ -157,6 +167,22 @@ public class PlayerManagement extends FragmentActivity
                 return true;
             }
         });
+
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.player_management_menu, menu);
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB){
+            SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+            SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+            searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+            searchView.setIconifiedByDefault(true);
+        }
+
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -178,12 +204,6 @@ public class PlayerManagement extends FragmentActivity
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         adapter.swapCursor(null);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.player_management_menu, menu);
-        return super.onCreateOptionsMenu(menu);
     }
 
     @Override

@@ -24,4 +24,6 @@
     <string name="confirm_player_remove_title">Erase player</string>
     <string name="confirm_player_remove">Are your sure you want to permanently erase player %1$s %2$s?</string>
     <string name="validate_player_remove">Erase</string>
+    <string name="search_hint">Search players</string>
+    <string name="search_title">Search</string>
 </resources>
