@@ -29,8 +29,8 @@ public class PlayerManagement extends Activity {
         switch (item.getItemId()) {
             case R.id.add_player:
                 // app icon in action bar clicked; go home
-//                Intent intent = new Intent(this, CreatePlayer.class);
-//                startActivity(intent);
+                Intent intent = new Intent(this, PlayerAdd.class);
+                startActivity(intent);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

@@ -8,4 +8,11 @@
     <string name="first_name">First name</string>
     <string name="last_name">Last name</string>
     <string name="default_points">500</string>
+    <string name="duplicate_player_title">Invalid player</string>
+    <string name="duplicate_player_message">Player with this licence number already exist</string>
+    <string name="invalid_player_licence_message">Invalid licence number</string>
+    <string name="invalid_player_first_name_message">Invalid first name</string>
+    <string name="invalid_player_last_name_message">Invalid last name</string>
+    <string name="invalid_player_points_message">Invalid points</string>
+
 </resources>
