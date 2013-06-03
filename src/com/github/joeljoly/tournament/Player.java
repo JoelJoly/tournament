@@ -1,5 +1,7 @@
 package com.github.joeljoly.tournament;
 
+import java.io.Serializable;
+
 /**
  * Created with IntelliJ IDEA.
  * User: joel
@@ -7,7 +9,7 @@ package com.github.joeljoly.tournament;
  * Time: 12:49 AM
  * To change this template use File | Settings | File Templates.
  */
-public class Player {
+public class Player implements Serializable {
     private String firstName;
     private String lastName;
     private Integer id;
@@ -55,4 +57,6 @@ public class Player {
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
+
+
 }

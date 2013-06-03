@@ -2,6 +2,7 @@ package com.github.joeljoly.tournament;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -88,6 +89,10 @@ public class PlayerAdd extends Activity {
                 database = new TournamentDataDbHelper(this);
                 if (database.addPlayer(newPlayer) >= 0)
                 {
+                    Intent returnIntent;
+                    returnIntent = new Intent();
+                    returnIntent.putExtra("result", newPlayer);
+                    setResult(RESULT_OK,returnIntent);
                     this.finish();
                 }
                 else
