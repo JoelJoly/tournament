@@ -5,6 +5,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.LinearLayout;
+
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -16,6 +19,18 @@ import android.view.MenuItem;
 public class PlayerManagement extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.player_management);
+        LinearLayout  layout = (LinearLayout) findViewById(R.id.playersLayout);
+        TournamentDataDbHelper database;
+        database = new TournamentDataDbHelper(this);
+        List<Player> players;
+        players = database.getAllPlayers();
+        for (Player player : players)
+        {
+            PlayerWidget    widget;
+            widget = new PlayerWidget(layout.getContext());
+            layout.addView(widget);
+        }
     }
 
     @Override
