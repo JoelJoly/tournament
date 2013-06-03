@@ -30,6 +30,7 @@ public class PlayerManagement extends Activity {
             PlayerWidget    widget;
             widget = new PlayerWidget(layout.getContext());
             layout.addView(widget);
+            widget.setPlayer(player);
         }
     }
 
