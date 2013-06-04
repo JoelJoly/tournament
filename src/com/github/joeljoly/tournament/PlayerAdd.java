@@ -113,6 +113,8 @@ public class PlayerAdd extends Activity {
     {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(message).setTitle(R.string.duplicate_player_title);
+        // display an "OK" button with nothing to do on click
+        builder.setPositiveButton(android.R.string.ok, null);
         AlertDialog dialog = builder.create();
         dialog.show();
     }
