@@ -1,5 +1,6 @@
 package com.github.joeljoly.tournament;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -24,6 +25,9 @@ public class PlayerAdd extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.player_add);
+        ActionBar actionBar = getActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+
         firstNameEdit = (EditText) findViewById(R.id.firstNameEdit);
         lastNameEdit = (EditText) findViewById(R.id.lastNameEdit);
         idEdit = (EditText) findViewById(R.id.idEdit);
@@ -39,6 +43,12 @@ public class PlayerAdd extends Activity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case android.R.id.home:
+                Intent backIntent;
+                backIntent = new Intent(this, PlayerManagement.class);
+                backIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(backIntent);
+                return true;
             case R.id.player_add_validate:
                 Integer licenceNumber;
                 try
