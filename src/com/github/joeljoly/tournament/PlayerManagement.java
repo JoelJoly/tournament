@@ -1,5 +1,6 @@
 package com.github.joeljoly.tournament;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -19,10 +20,18 @@ import java.util.List;
 public class PlayerManagement extends Activity {
     TournamentDataDbHelper database;
     LinearLayout playersLayout;
+    Class parentIntent;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.player_management);
+        ActionBar actionBar = getActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        Bundle activityParameters;
+        activityParameters = getIntent().getExtras();
+        if (activityParameters != null && activityParameters.containsKey("caller"))
+            parentIntent = (Class) activityParameters.get("caller");
+
         playersLayout = (LinearLayout) findViewById(R.id.playersLayout);
         database = new TournamentDataDbHelper(this);
         List<Player> players;
@@ -45,6 +54,12 @@ public class PlayerManagement extends Activity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case android.R.id.home:
+                Intent backIntent;
+                backIntent = new Intent(this, parentIntent != null ? parentIntent : MainPage.class);
+                backIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(backIntent);
+                return true;
             case R.id.add_player:
                 // app icon in action bar clicked; go home
                 Intent intent = new Intent(this, PlayerAdd.class);

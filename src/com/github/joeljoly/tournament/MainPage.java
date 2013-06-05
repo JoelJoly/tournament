@@ -24,6 +24,7 @@ public class MainPage extends Activity
             public void onClick(View view) {
                 Intent managePlayersIntent;
                 managePlayersIntent = new Intent(MainPage.this, PlayerManagement.class);
+                managePlayersIntent.putExtra("caller", MainPage.class);
                 MainPage.this.startActivity(managePlayersIntent);
             }
         });
