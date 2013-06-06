@@ -124,11 +124,15 @@ public class TournamentDataDbHelper extends SQLiteOpenHelper {
 
     // Deleting single player
     public void deletePlayer(Player player) {
+        deletePlayer(player.getId());
+    }
+    // Deleting single player
+    public void deletePlayer(Integer playerId) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(
-            TournamentDbContract.PlayersEntry.TABLE_NAME,
+                TournamentDbContract.PlayersEntry.TABLE_NAME,
                 TournamentDbContract.PlayersEntry.COLUMN_NAME_ID + " = ?",
-            new String[] { String.valueOf(player.getId()) });
+                new String[] { String.valueOf(playerId) });
         db.close();
     }
 

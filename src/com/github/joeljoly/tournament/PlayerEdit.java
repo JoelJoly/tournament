@@ -5,8 +5,11 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
 
 /**
@@ -16,22 +19,62 @@ import android.widget.EditText;
  * Time: 13:42 PM
  * To change this template use File | Settings | File Templates.
  */
-public class PlayerAdd extends Activity {
+public class PlayerEdit extends Activity {
     private EditText firstNameEdit;
     private EditText lastNameEdit;
     private EditText idEdit;
     private EditText pointsEdit;
+    private CheckBox allowIdEdit;
+    Integer originaId;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.player_add);
-        ActionBar actionBar = getActionBar();
+        setContentView(R.layout.player_edit);
+        ActionBar actionBar;
+        actionBar = getActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
         firstNameEdit = (EditText) findViewById(R.id.firstNameEdit);
         lastNameEdit = (EditText) findViewById(R.id.lastNameEdit);
         idEdit = (EditText) findViewById(R.id.idEdit);
         pointsEdit = (EditText) findViewById(R.id.pointEdit);
+        allowIdEdit = (CheckBox) findViewById(R.id.allowIdEdit);
+        CheckBox.OnClickListener listener;
+        listener = new CheckBox.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CheckBox checkBox = (CheckBox) v;
+                idEdit.setInputType(checkBox.isChecked() ? InputType.TYPE_CLASS_NUMBER : InputType.TYPE_NULL);
+                idEdit.setEnabled(checkBox.isChecked());
+            }
+        };
+        allowIdEdit.setOnClickListener(listener);
+
+        Bundle activityParameters;
+        activityParameters = getIntent().getExtras();
+        if (activityParameters != null && activityParameters.containsKey("playerId"))
+        {
+            Integer playerId;
+            playerId = (Integer) activityParameters.get("playerId");
+            TournamentDataDbHelper database;
+            database = new TournamentDataDbHelper(this);
+            Player player;
+            player = database.getPlayer(playerId);
+            if (player == null)
+                throw new IllegalStateException("Cannot find player based on the given Id");
+            firstNameEdit.setText(player.getFirstName());
+            lastNameEdit.setText(player.getLastName());
+            originaId = player.getId();
+            idEdit.setText(originaId.toString());
+            pointsEdit.setText(player.getPoints().toString());
+            allowIdEdit.setChecked(false);
+        }
+        else
+        {
+            allowIdEdit.setChecked(true);
+            allowIdEdit.setVisibility(View.INVISIBLE);
+        }
+        listener.onClick(allowIdEdit);
     }
 
     @Override
@@ -97,7 +140,34 @@ public class PlayerAdd extends Activity {
                 newPlayer = new Player(licenceNumber, firstName, lastName, points);
                 TournamentDataDbHelper database;
                 database = new TournamentDataDbHelper(this);
-                if (database.addPlayer(newPlayer) >= 0)
+                // editing existing player
+                if (originaId != null)
+                {
+                    // id hasn't changed, just update contact data
+                    if (originaId.equals(licenceNumber))
+                    {
+                        database.updateContact(newPlayer);
+                    }
+                    else
+                    {
+                        // otherwise it will get complicated, begin to make sure new id is valid
+                        if (database.addPlayer(newPlayer) >= 0)
+                        {
+                            // when other tables are created, update every table that references the old id with the new one
+
+                            // remove old entry
+                            database.deletePlayer(originaId);
+                        }
+                        else
+                            newPlayer = null;
+                    }
+                }
+                else
+                {
+                    if (database.addPlayer(newPlayer) < 0)
+                        newPlayer = null;
+                }
+                if (newPlayer != null)
                 {
                     Intent returnIntent;
                     returnIntent = new Intent();

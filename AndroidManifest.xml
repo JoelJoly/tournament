@@ -13,6 +13,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".PlayerManagement" android:label="@string/manage_players_text"/>
-        <activity android:name=".PlayerAdd" android:label="@string/add_player_title"/>
+        <activity android:name=".PlayerEdit" android:label="@string/add_player_title"/>
     </application>
 </manifest>

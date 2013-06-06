@@ -13,6 +13,6 @@
     <string name="invalid_player_licence_message">Invalid licence number</string>
     <string name="invalid_player_first_name_message">Invalid first name</string>
     <string name="invalid_player_last_name_message">Invalid last name</string>
-    <string name="invalid_player_points_message">Invalid points</string>
+    <string name="invalid_player_points_message">Invalid points</string><string name="allow_edit_id">Edit licence</string><string name="points">Points</string><string name="name">Name</string><string name="player_id">Licence</string>
 
 </resources>
