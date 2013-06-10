@@ -4,6 +4,7 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,7 +20,7 @@ import java.util.List;
  * Time: 6:21 PM
  * To change this template use File | Settings | File Templates.
  */
-public class PlayerManagement extends Activity {
+public class PlayerManagement extends FragmentActivity {
     TournamentDataDbHelper database;
     LinearLayout playersLayout;
     Class parentIntent;
