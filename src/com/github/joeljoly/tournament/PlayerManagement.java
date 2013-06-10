@@ -1,17 +1,18 @@
 package com.github.joeljoly.tournament;
 
 import android.app.ActionBar;
-import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.widget.CursorAdapter;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -36,28 +37,17 @@ public class PlayerManagement extends FragmentActivity {
         if (activityParameters != null && activityParameters.containsKey("caller"))
             parentIntent = (Class) activityParameters.get("caller");
 
-        playersLayout = (LinearLayout) findViewById(R.id.playersLayout);
-        idToWidget = new HashMap<Integer, PlayerWidget>();
-        database = new TournamentDataDbHelper(this);
-        List<Player> players;
-        players = database.getAllPlayers();
-        for (final Player player : players)
-        {
-            PlayerWidget    widget;
-            widget = new PlayerWidget(playersLayout.getContext());
-            playersLayout.addView(widget);
-            widget.setPlayer(player);
-            widget.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent  editIntent;
-                    editIntent = new Intent(PlayerManagement.this, PlayerEdit.class);
-                    editIntent.putExtra("playerId", player.getId());
-                    startActivityForResult(editIntent, 2);
-                }
-            });
-            idToWidget.put(player.getId(), widget);
-        }
+        String[] projection = { TournamentDbContract.PlayersEntry._ID, TournamentDbContract.PlayersEntry.COLUMN_NAME_FIRST_NAME};
+        String[] uiBindFrom = { TournamentDbContract.PlayersEntry.COLUMN_NAME_FIRST_NAME };
+        int[] uiBindTo = { R.id.playerNameView };
+        Cursor players = managedQuery(
+                PlayersProvider.CONTENT_URI, projection, null, null, null);
+        CursorAdapter adapter = new SimpleCursorAdapter(this.getApplicationContext(),
+                R.layout.player, players,
+                uiBindFrom, uiBindTo);
+
+        ListView listView = (ListView) findViewById(R.id.listView);
+        listView.setAdapter(adapter);
     }
 
     @Override
