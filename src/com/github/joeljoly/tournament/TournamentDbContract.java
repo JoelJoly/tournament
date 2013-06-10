@@ -18,7 +18,7 @@ public class TournamentDbContract {
 
     public static abstract class PlayersEntry implements BaseColumns {
         public static final String TABLE_NAME = "players";
-        public static final String COLUMN_NAME_ID = "id";
+        public static final String COLUMN_NAME_ID = BaseColumns._ID;
         public static final String COLUMN_NAME_FIRST_NAME = "firstName";
         public static final String COLUMN_NAME_LAST_NAME = "lastName";
         // this field may change, so each tournament should copy the points of a player when it is created

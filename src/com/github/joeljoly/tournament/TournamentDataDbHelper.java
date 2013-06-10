@@ -3,6 +3,7 @@ package com.github.joeljoly.tournament;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -18,7 +19,7 @@ import java.util.List;
  */
 public class TournamentDataDbHelper extends SQLiteOpenHelper {
     // If you change the database schema, you must increment the database version.
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 2;
     public static final String DATABASE_NAME = "Tournament.db";
 
     public TournamentDataDbHelper(Context context) {
@@ -32,9 +33,39 @@ public class TournamentDataDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // when we'll have different versions, rewrite this to convert data, for now drop everything
-        db.execSQL("DROP TABLE IF EXISTS " + TournamentDbContract.PlayersEntry.TABLE_NAME);
-        onCreate(db);
+        // convert from version 1 to version 2
+        if (oldVersion == 1)
+        {
+            db.beginTransaction();
+
+            try {
+                String temporaryTableName = "tempCopyForIdRename";
+                // rename table with a temporary name
+                db.execSQL("ALTER TABLE " + TournamentDbContract.PlayersEntry.TABLE_NAME + " RENAME TO " +  temporaryTableName);
+                // recreate the table with correct columns name
+                TournamentDbContract.PlayersEntry.sqlCreateEntries(db);
+                String originalIdName = "id";
+                // copy rows from temp table to new one
+                db.execSQL("INSERT INTO " + TournamentDbContract.PlayersEntry.TABLE_NAME + "(" +
+                        TournamentDbContract.PlayersEntry._ID + "," +
+                        TournamentDbContract.PlayersEntry.COLUMN_NAME_FIRST_NAME + "," +
+                        TournamentDbContract.PlayersEntry.COLUMN_NAME_LAST_NAME + "," +
+                        TournamentDbContract.PlayersEntry.COLUMN_NAME_POINTS + ") " +
+                        "SELECT " +
+                        originalIdName + "," +
+                        TournamentDbContract.PlayersEntry.COLUMN_NAME_FIRST_NAME + "," +
+                        TournamentDbContract.PlayersEntry.COLUMN_NAME_LAST_NAME + "," +
+                        TournamentDbContract.PlayersEntry.COLUMN_NAME_POINTS +
+                        " FROM " + temporaryTableName + ";");
+                // erase temporary table
+                db.execSQL("DROP TABLE " + temporaryTableName);
+                db.setTransactionSuccessful();
+            } catch (SQLException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            } finally {
+                db.endTransaction();
+            }
+        }
     }
 
     private ContentValues contentFromPlayer(Player player) {
@@ -42,7 +73,7 @@ public class TournamentDataDbHelper extends SQLiteOpenHelper {
         values.put(TournamentDbContract.PlayersEntry.COLUMN_NAME_FIRST_NAME, player.getFirstName());
         values.put(TournamentDbContract.PlayersEntry.COLUMN_NAME_LAST_NAME, player.getLastName());
         values.put(TournamentDbContract.PlayersEntry.COLUMN_NAME_POINTS, player.getPoints());
-        values.put(TournamentDbContract.PlayersEntry.COLUMN_NAME_ID, player.getId());
+        values.put(TournamentDbContract.PlayersEntry._ID, player.getId());
         return values;
     }
     long addPlayer(Player player) {
@@ -71,12 +102,12 @@ public class TournamentDataDbHelper extends SQLiteOpenHelper {
 
         Cursor cursor = db.query(TournamentDbContract.PlayersEntry.TABLE_NAME,
             new String[] {
-                TournamentDbContract.PlayersEntry.COLUMN_NAME_ID,
+                TournamentDbContract.PlayersEntry._ID,
                 TournamentDbContract.PlayersEntry.COLUMN_NAME_FIRST_NAME,
                 TournamentDbContract.PlayersEntry.COLUMN_NAME_LAST_NAME,
                 TournamentDbContract.PlayersEntry.COLUMN_NAME_POINTS,
             },
-            TournamentDbContract.PlayersEntry.COLUMN_NAME_ID + " = ?",
+            TournamentDbContract.PlayersEntry._ID + " = ?",
             new String[] { String.valueOf(id) },
             null, null, null, null);
         if (cursor != null)
@@ -118,7 +149,7 @@ public class TournamentDataDbHelper extends SQLiteOpenHelper {
         return db.update(
             TournamentDbContract.PlayersEntry.TABLE_NAME,
             values,
-            TournamentDbContract.PlayersEntry.COLUMN_NAME_ID + " = ?",
+            TournamentDbContract.PlayersEntry._ID + " = ?",
             new String[] { String.valueOf(player.getId()) });
     }
 
@@ -131,7 +162,7 @@ public class TournamentDataDbHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(
                 TournamentDbContract.PlayersEntry.TABLE_NAME,
-                TournamentDbContract.PlayersEntry.COLUMN_NAME_ID + " = ?",
+                TournamentDbContract.PlayersEntry._ID + " = ?",
                 new String[] { String.valueOf(playerId) });
         db.close();
     }
