@@ -89,7 +89,7 @@ public class TournamentDataDbHelper extends SQLiteOpenHelper {
         return rowId;
     }
 
-    private Player createPlayerFromCursor(Cursor cursor) {
+    Player createPlayerFromCursor(Cursor cursor) {
         return new Player(
             cursor.getInt(cursor.getColumnIndex(TournamentDbContract.PlayersEntry.COLUMN_NAME_ID)),
             cursor.getString(cursor.getColumnIndex(TournamentDbContract.PlayersEntry.COLUMN_NAME_FIRST_NAME)),

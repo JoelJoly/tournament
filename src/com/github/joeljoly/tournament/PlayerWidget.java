@@ -1,6 +1,8 @@
 package com.github.joeljoly.tournament;
 
 import android.content.Context;
+import android.database.Cursor;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +20,32 @@ public class PlayerWidget extends LinearLayout
 {
     TextView playerNameView;
     TextView playerPointsView;
+
+    public static class ViewBinder implements SimpleCursorAdapter.ViewBinder
+    {
+        TournamentDataDbHelper databaseHelper;
+        ViewBinder(Context context)
+        {
+            databaseHelper = new TournamentDataDbHelper(context);
+        }
+        public boolean setViewValue(View view, Cursor cursor, int columnIndex)
+        {
+            Player  player = databaseHelper.createPlayerFromCursor(cursor);
+            switch (view.getId())
+            {
+                case R.id.playerNameView:
+                    TextView playerNameView = (TextView) view;
+                    playerNameView.setText(player.getFirstName() + " " + player.getLastName());
+                    return true;
+                case R.id.playerPointsView:
+                    TextView playerPointsView = (TextView) view;
+                    playerPointsView.setText(player.getPoints().toString());
+                    return true;
+            }
+            return false;
+        }
+    }
+
 
     public PlayerWidget(Context context)
     {

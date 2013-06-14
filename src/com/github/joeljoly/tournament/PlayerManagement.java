@@ -45,15 +45,18 @@ public class PlayerManagement extends FragmentActivity
             parentIntent = (Class) activityParameters.get("caller");
 
         String[] uiBindFrom = {
-                TournamentDbContract.PlayersEntry.COLUMN_NAME_FIRST_NAME
+                TournamentDbContract.PlayersEntry.COLUMN_NAME_FIRST_NAME,
+                TournamentDbContract.PlayersEntry.COLUMN_NAME_POINTS
         };
         int[] uiBindTo = {
-                R.id.playerNameView
+                R.id.playerNameView,
+                R.id.playerPointsView
         };
         getSupportLoaderManager().initLoader(PLAYERS_LIST_LOADER, null, this);
         adapter = new SimpleCursorAdapter(this.getApplicationContext(),
                 R.layout.player, null, uiBindFrom, uiBindTo,
                 CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+        adapter.setViewBinder(new PlayerWidget.ViewBinder(this));
 
         ListView listView = (ListView) findViewById(R.id.listView);
         listView.setAdapter(adapter);
@@ -63,7 +66,9 @@ public class PlayerManagement extends FragmentActivity
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         String[] projection = {
                 TournamentDbContract.PlayersEntry._ID,
-                TournamentDbContract.PlayersEntry.COLUMN_NAME_FIRST_NAME
+                TournamentDbContract.PlayersEntry.COLUMN_NAME_FIRST_NAME,
+                TournamentDbContract.PlayersEntry.COLUMN_NAME_LAST_NAME,
+                TournamentDbContract.PlayersEntry.COLUMN_NAME_POINTS
         };
         CursorLoader cursorLoader = new CursorLoader(this,
                 PlayersProvider.CONTENT_URI, projection, null, null, null);
