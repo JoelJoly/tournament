@@ -5,6 +5,9 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.Menu;
@@ -21,11 +24,15 @@ import java.util.HashMap;
  * Time: 6:21 PM
  * To change this template use File | Settings | File Templates.
  */
-public class PlayerManagement extends FragmentActivity {
+public class PlayerManagement extends FragmentActivity
+        implements LoaderManager.LoaderCallbacks<Cursor>
+{
     TournamentDataDbHelper database;
     LinearLayout playersLayout;
     Class parentIntent;
     HashMap<Integer, PlayerWidget> idToWidget;
+    private static final int PLAYERS_LIST_LOADER = 0x01;
+    private SimpleCursorAdapter adapter;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,17 +44,38 @@ public class PlayerManagement extends FragmentActivity {
         if (activityParameters != null && activityParameters.containsKey("caller"))
             parentIntent = (Class) activityParameters.get("caller");
 
-        String[] projection = { TournamentDbContract.PlayersEntry._ID, TournamentDbContract.PlayersEntry.COLUMN_NAME_FIRST_NAME};
-        String[] uiBindFrom = { TournamentDbContract.PlayersEntry.COLUMN_NAME_FIRST_NAME };
-        int[] uiBindTo = { R.id.playerNameView };
-        Cursor players = managedQuery(
-                PlayersProvider.CONTENT_URI, projection, null, null, null);
-        CursorAdapter adapter = new SimpleCursorAdapter(this.getApplicationContext(),
-                R.layout.player, players,
-                uiBindFrom, uiBindTo);
+        String[] uiBindFrom = {
+                TournamentDbContract.PlayersEntry.COLUMN_NAME_FIRST_NAME
+        };
+        int[] uiBindTo = {
+                R.id.playerNameView
+        };
+        getSupportLoaderManager().initLoader(PLAYERS_LIST_LOADER, null, this);
+        adapter = new SimpleCursorAdapter(this.getApplicationContext(),
+                R.layout.player, null, uiBindFrom, uiBindTo,
+                CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 
         ListView listView = (ListView) findViewById(R.id.listView);
         listView.setAdapter(adapter);
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        String[] projection = {
+                TournamentDbContract.PlayersEntry._ID,
+                TournamentDbContract.PlayersEntry.COLUMN_NAME_FIRST_NAME
+        };
+        CursorLoader cursorLoader = new CursorLoader(this,
+                PlayersProvider.CONTENT_URI, projection, null, null, null);
+        return cursorLoader;
+    }
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        adapter.swapCursor(cursor);
+    }
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        adapter.swapCursor(null);
     }
 
     @Override
