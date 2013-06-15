@@ -77,7 +77,7 @@ public class PlayerManagement extends FragmentActivity
                 PlayerWidget playerWidget = new PlayerWidget(PlayerManagement.this);
                 final Integer playerId = (int)id;
                 final TournamentDataDbHelper database = new TournamentDataDbHelper(PlayerManagement.this);
-                Player clickedPlayer = database.getPlayer(playerId);
+                final Player clickedPlayer = database.getPlayer(playerId);
                 playerWidget.setPlayer(clickedPlayer);
                 AlertDialog.Builder alert;
                 alert = new AlertDialog.Builder(PlayerManagement.this);
@@ -96,9 +96,20 @@ public class PlayerManagement extends FragmentActivity
                                 new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
-                                        database.deletePlayer(playerId);
-                                        getSupportLoaderManager().restartLoader(PlayerManagement.PLAYERS_LIST_LOADER,
-                                                null, PlayerManagement.this);
+                                        new AlertDialog.Builder(PlayerManagement.this)
+                                                .setTitle(R.string.confirm_player_remove_title)
+                                                .setMessage(getString(R.string.confirm_player_remove, clickedPlayer.getFirstName(), clickedPlayer.getLastName()))
+                                                .setNegativeButton(android.R.string.cancel, null)
+                                                .setPositiveButton(R.string.validate_player_remove,
+                                                        new DialogInterface.OnClickListener() {
+                                                            @Override
+                                                            public void onClick(DialogInterface dialog, int which) {
+                                                                database.deletePlayer(playerId);
+                                                                getSupportLoaderManager().restartLoader(PlayerManagement.PLAYERS_LIST_LOADER,
+                                                                        null, PlayerManagement.this);
+                                                            }
+                                                        })
+                                                .show();
                                     }
                                 })
                         .show();
