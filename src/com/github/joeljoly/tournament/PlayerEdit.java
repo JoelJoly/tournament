@@ -171,7 +171,9 @@ public class PlayerEdit extends Activity {
                 {
                     Intent returnIntent;
                     returnIntent = new Intent();
-                    returnIntent.putExtra("result", newPlayer);
+                    returnIntent.putExtra("added", newPlayer.getId());
+                    if (originaId != null)
+                        returnIntent.putExtra("removed", originaId);
                     setResult(RESULT_OK,returnIntent);
                     this.finish();
                 }

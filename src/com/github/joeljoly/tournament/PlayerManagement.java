@@ -12,6 +12,8 @@ import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
@@ -60,6 +62,14 @@ public class PlayerManagement extends FragmentActivity
 
         ListView listView = (ListView) findViewById(R.id.listView);
         listView.setAdapter(adapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent editIntent = new Intent(PlayerManagement.this, PlayerEdit.class);
+                editIntent.putExtra("playerId", (int)id);
+                startActivityForResult(editIntent, 2);
+            }
+        });
     }
 
     @Override
@@ -113,28 +123,14 @@ public class PlayerManagement extends FragmentActivity
 
         if (resultCode == RESULT_OK)
         {
-            switch (requestCode)
-            {
-                case 1:
-                    // refresh the view by querying a new loader
-                    getSupportLoaderManager().restartLoader(PLAYERS_LIST_LOADER, null, this);
-                    break;
-                case 2:
-                    // search a potential already existing widget
-//                    widget = idToWidget.get(newPlayer.getId());
-//                    if (widget == null)
-//                    {
-//                        Integer previousId;
-//                        previousId = (Integer) data.getSerializableExtra("previousId");
-//                        if (previousId == null)
-//                            throw new IllegalStateException("Returning activity should have set a previousId if the player id has changed");
-//                        widget = idToWidget.get(previousId);
-//                        if (widget == null)
-//                            throw new IllegalStateException("Returning activity returned an invalid previousId");
-//                    }
-//                    widget.setPlayer(newPlayer);
-                    break;
-            }
+            Integer addedPlayer = data.getIntExtra("added", -1);
+            Integer removedPlayer = data.getIntExtra("removed", -1);
+            // if we only updated one player, a data changed notification will be enough
+            if (addedPlayer == removedPlayer)
+                adapter.notifyDataSetChanged();
+            else
+                // otherwise refresh the view by querying a new loader
+                getSupportLoaderManager().restartLoader(PLAYERS_LIST_LOADER, null, this);
         }
     }
 }
