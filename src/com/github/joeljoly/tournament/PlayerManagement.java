@@ -113,33 +113,26 @@ public class PlayerManagement extends FragmentActivity
 
         if (resultCode == RESULT_OK)
         {
-            Player newPlayer;
-            newPlayer = (Player) data.getSerializableExtra("result");
-            if (newPlayer == null)
-                throw new IllegalStateException("Returning activity should have set a Player if it returns OK");
-            PlayerWidget widget;
             switch (requestCode)
             {
                 case 1:
-                    // create and insert new widget
-                    widget = new PlayerWidget(playersLayout.getContext());
-                    playersLayout.addView(widget);
-                    widget.setPlayer(newPlayer);
+                    // refresh the view by querying a new loader
+                    getSupportLoaderManager().restartLoader(PLAYERS_LIST_LOADER, null, this);
                     break;
                 case 2:
                     // search a potential already existing widget
-                    widget = idToWidget.get(newPlayer.getId());
-                    if (widget == null)
-                    {
-                        Integer previousId;
-                        previousId = (Integer) data.getSerializableExtra("previousId");
-                        if (previousId == null)
-                            throw new IllegalStateException("Returning activity should have set a previousId if the player id has changed");
-                        widget = idToWidget.get(previousId);
-                        if (widget == null)
-                            throw new IllegalStateException("Returning activity returned an invalid previousId");
-                    }
-                    widget.setPlayer(newPlayer);
+//                    widget = idToWidget.get(newPlayer.getId());
+//                    if (widget == null)
+//                    {
+//                        Integer previousId;
+//                        previousId = (Integer) data.getSerializableExtra("previousId");
+//                        if (previousId == null)
+//                            throw new IllegalStateException("Returning activity should have set a previousId if the player id has changed");
+//                        widget = idToWidget.get(previousId);
+//                        if (widget == null)
+//                            throw new IllegalStateException("Returning activity returned an invalid previousId");
+//                    }
+//                    widget.setPlayer(newPlayer);
                     break;
             }
         }
