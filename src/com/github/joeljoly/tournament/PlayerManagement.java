@@ -1,6 +1,8 @@
 package com.github.joeljoly.tournament;
 
 import android.app.ActionBar;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -29,7 +31,6 @@ import java.util.HashMap;
 public class PlayerManagement extends FragmentActivity
         implements LoaderManager.LoaderCallbacks<Cursor>
 {
-    TournamentDataDbHelper database;
     LinearLayout playersLayout;
     Class parentIntent;
     HashMap<Integer, PlayerWidget> idToWidget;
@@ -68,6 +69,40 @@ public class PlayerManagement extends FragmentActivity
                 Intent editIntent = new Intent(PlayerManagement.this, PlayerEdit.class);
                 editIntent.putExtra("playerId", (int)id);
                 startActivityForResult(editIntent, 2);
+            }
+        });
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                PlayerWidget playerWidget = new PlayerWidget(PlayerManagement.this);
+                final Integer playerId = (int)id;
+                final TournamentDataDbHelper database = new TournamentDataDbHelper(PlayerManagement.this);
+                Player clickedPlayer = database.getPlayer(playerId);
+                playerWidget.setPlayer(clickedPlayer);
+                AlertDialog.Builder alert;
+                alert = new AlertDialog.Builder(PlayerManagement.this);
+                alert.setTitle(R.string.select_player_management_action)
+                        .setView(playerWidget)
+                        .setPositiveButton(R.string.select_player_management_edit,
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        Intent editIntent = new Intent(PlayerManagement.this, PlayerEdit.class);
+                                        editIntent.putExtra("playerId", playerId);
+                                        startActivityForResult(editIntent, 2);
+                                    }
+                                })
+                        .setNegativeButton(R.string.select_player_management_remove,
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        database.deletePlayer(playerId);
+                                        getSupportLoaderManager().restartLoader(PlayerManagement.PLAYERS_LIST_LOADER,
+                                                null, PlayerManagement.this);
+                                    }
+                                })
+                        .show();
+                return true;
             }
         });
     }
