@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="horizontal"
               android:layout_width="match_parent"
               android:layout_height="match_parent" android:id="@+id/playerWidgetLayout" android:focusableInTouchMode="false"
@@ -9,23 +9,28 @@
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/default_player_name"
-            android:id="@+id/playerNameView" android:layout_gravity="left|center_vertical"/>
+            android:id="@+id/playerNameView" android:layout_gravity="left|center_vertical" android:layout_row="0"
+            android:layout_column="1" android:textStyle="bold" android:hint="@string/default_player_name"
+            android:textSize="20sp"
+            />
+    <Space android:layout_width="20px" android:layout_height="20px" android:id="@+id/space1"
+           android:layout_gravity="center" android:layout_row="0" android:layout_column="0"/>
     <Space
             android:layout_width="20px"
             android:layout_height="20px"
-            android:id="@+id/space" android:layout_gravity="center"/>
-    <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/default_player_points"
-            android:id="@+id/playerPointsView" android:layout_gravity="center|right"/>
+            android:id="@+id/space" android:layout_gravity="center" android:layout_row="0" android:layout_column="2"/>
 
     <view
             class="com.github.joeljoly.tournament.PlayerWidget$RankViewer"
             android:layout_width="51dp"
             android:layout_height="51dp"
             android:id="@+id/playerRankView"
-            android:layout_gravity="center"
-            />
-</LinearLayout>
+            android:layout_row="0" android:layout_column="3" android:layout_gravity="right"
+            android:layout_rowSpan="2"/>
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/default_player_points"
+            android:id="@+id/playerPointsView" android:layout_gravity="top" android:layout_row="1"
+            android:layout_column="1"/>
+</GridLayout>
