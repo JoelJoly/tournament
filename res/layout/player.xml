@@ -20,4 +20,12 @@
             android:layout_height="wrap_content"
             android:text="@string/default_player_points"
             android:id="@+id/playerPointsView" android:layout_gravity="center|right"/>
+
+    <view
+            class="com.github.joeljoly.tournament.PlayerWidget$RankViewer"
+            android:layout_width="51dp"
+            android:layout_height="51dp"
+            android:id="@+id/playerRankView"
+            android:layout_gravity="center"
+            />
 </LinearLayout>

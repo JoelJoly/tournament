@@ -7,6 +7,7 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 /**
@@ -20,6 +21,7 @@ public class PlayerWidget extends LinearLayout
 {
     TextView playerNameView;
     TextView playerPointsView;
+    RankViewer rankViewer;
 
     public static class ViewBinder implements SimpleCursorAdapter.ViewBinder
     {
@@ -41,11 +43,41 @@ public class PlayerWidget extends LinearLayout
                     TextView playerPointsView = (TextView) view;
                     playerPointsView.setText(player.getPoints().toString());
                     return true;
+                case R.id.rankTextView:
+                    RankViewer.setPoints((TextView) view, player.getPoints());
+                    return true;
             }
             return false;
         }
     }
 
+    public static class RankViewer extends RelativeLayout
+    {
+        TextView    rankView;
+        public RankViewer(Context context)
+        {
+            super(context);
+            LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            final View inflate = inflater.inflate(R.layout.player_rank, this);
+            rankView = (TextView) findViewById(R.id.rankTextView);
+        }
+        public RankViewer(Context context, AttributeSet attributeSet)
+        {
+            super(context, attributeSet);
+            LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            final View inflate = inflater.inflate(R.layout.player_rank, this);
+            rankView = (TextView) findViewById(R.id.rankTextView);
+        }
+        public void setPoints(Integer points)
+        {
+            setPoints(rankView, points);
+        }
+        static void setPoints(TextView view, Integer points)
+        {
+            Integer rankFromPoint = points/100;
+            view.setText(rankFromPoint.toString());
+        }
+    }
 
     public PlayerWidget(Context context)
     {
@@ -54,6 +86,7 @@ public class PlayerWidget extends LinearLayout
         final View inflate = inflater.inflate(R.layout.player, this);
         playerNameView = (TextView) findViewById(R.id.playerNameView);
         playerPointsView = (TextView) findViewById(R.id.playerPointsView);
+        rankViewer = (RankViewer) findViewById(R.id.playerRankView);
     }
     public PlayerWidget(Context context, AttributeSet attributeSet)
     {
@@ -66,5 +99,6 @@ public class PlayerWidget extends LinearLayout
     {
         playerNameView.setText(player.getFirstName() + " " + player.getLastName());
         playerPointsView.setText(player.getPoints().toString());
+        rankViewer.setPoints(player.getPoints());
     }
 }

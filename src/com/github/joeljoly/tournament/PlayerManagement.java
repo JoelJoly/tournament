@@ -49,11 +49,13 @@ public class PlayerManagement extends FragmentActivity
 
         String[] uiBindFrom = {
                 TournamentDbContract.PlayersEntry.COLUMN_NAME_FIRST_NAME,
+                TournamentDbContract.PlayersEntry.COLUMN_NAME_POINTS,
                 TournamentDbContract.PlayersEntry.COLUMN_NAME_POINTS
         };
         int[] uiBindTo = {
                 R.id.playerNameView,
-                R.id.playerPointsView
+                R.id.playerPointsView,
+                R.id.rankTextView
         };
         getSupportLoaderManager().initLoader(PLAYERS_LIST_LOADER, null, this);
         adapter = new SimpleCursorAdapter(this.getApplicationContext(),
