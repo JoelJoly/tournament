@@ -93,6 +93,9 @@ public class PlayerWidget extends LinearLayout
         super(context, attributeSet);
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         inflater.inflate(R.layout.player, this);
+        playerNameView = (TextView) findViewById(R.id.playerNameView);
+        playerPointsView = (TextView) findViewById(R.id.playerPointsView);
+        rankViewer = (RankViewer) findViewById(R.id.playerRankView);
     }
 
     public void setPlayer(Player player)
