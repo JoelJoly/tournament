@@ -180,6 +180,20 @@ public class PlayerManagement extends FragmentActivity
             SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
             searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
             searchView.setIconifiedByDefault(true);
+            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextSubmit(String query) {
+                    return false;  //To change body of implemented methods use File | Settings | File Templates.
+                }
+
+                @Override
+                public boolean onQueryTextChange(String newText) {
+                    Bundle bundle = new Bundle();
+                    bundle.putString("search", newText);
+                    getSupportLoaderManager().restartLoader(PLAYERS_LIST_LOADER, bundle, PlayerManagement.this);
+                    return true;
+                }
+            });
         }
 
         return super.onCreateOptionsMenu(menu);
@@ -193,8 +207,17 @@ public class PlayerManagement extends FragmentActivity
                 TournamentDbContract.PlayersEntry.COLUMN_NAME_LAST_NAME,
                 TournamentDbContract.PlayersEntry.COLUMN_NAME_POINTS
         };
+        String selection = null;
+        String[] selectionArgs = null;
+        if (args != null && args.containsKey("search")) {
+            String searchValue = (String) args.get("search");
+            if (!searchValue.isEmpty()) {
+                selection = TournamentDbContract.PlayersEntry.COLUMN_NAME_FIRST_NAME + " LIKE ?";
+                selectionArgs = new String[] { "%"+searchValue+"%" };
+            }
+        }
         CursorLoader cursorLoader = new CursorLoader(this,
-                PlayersProvider.CONTENT_URI, projection, null, null, null);
+                PlayersProvider.CONTENT_URI, projection, selection, selectionArgs, null);
         return cursorLoader;
     }
     @Override
