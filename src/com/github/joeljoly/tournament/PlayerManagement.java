@@ -217,7 +217,7 @@ public class PlayerManagement extends FragmentActivity
             }
         }
         CursorLoader cursorLoader = new CursorLoader(this,
-                PlayersProvider.CONTENT_URI, projection, selection, selectionArgs, null);
+                PlayersProvider.CONTENT_URI, projection, selection, selectionArgs, TournamentDbContract.PlayersEntry.COLUMN_NAME_FIRST_NAME + " ASC");
         return cursorLoader;
     }
     @Override
