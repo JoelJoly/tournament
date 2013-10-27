@@ -17,9 +17,8 @@
             android:name="com.github.joeljoly.tournament.PlayerListActivity"
             android:label="@string/app_name" >
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
         <activity
@@ -30,6 +29,22 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".PlayerListActivity" />
         </activity>
+
+        <activity android:name="MainPage"
+            android:label="@string/app_name">
+        </activity>
+        <activity android:name=".PlayerManagement" android:label="@string/manage_players_text">
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+            <meta-data android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
+        </activity>
+        <activity android:name=".PlayerEdit" android:label="@string/add_player_title"/>
+        <provider
+            android:authorities="com.github.joeljoly.tournament.PlayersProvider"
+            android:name="com.github.joeljoly.tournament.PlayersProvider"/>
+
     </application>
 
 </manifest>
