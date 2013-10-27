@@ -3,6 +3,9 @@ package com.github.joeljoly.tournament;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
 
 /**
@@ -29,6 +32,11 @@ public class PlayerListActivity extends FragmentActivity
      * device.
      */
     private boolean mTwoPane;
+
+    /**
+     * The id of the currently selected player.
+     */
+    private long mCurrentPlayerId = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +66,7 @@ public class PlayerListActivity extends FragmentActivity
      */
     @Override
     public void onItemSelected(long id) {
+        mCurrentPlayerId = id;
         if (mTwoPane) {
             // In two-pane mode, show the detail view in this activity by
             // adding or replacing the detail fragment using a
@@ -69,7 +78,8 @@ public class PlayerListActivity extends FragmentActivity
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.player_detail_container, fragment)
                     .commit();
-
+            // rebuild the menu
+            supportInvalidateOptionsMenu();
         } else {
             // In single-pane mode, simply start the detail activity
             // for the selected item ID.
@@ -78,4 +88,40 @@ public class PlayerListActivity extends FragmentActivity
             startActivity(detailIntent);
         }
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if (mTwoPane) {
+            MenuInflater inflater = getMenuInflater();
+            inflater.inflate(R.menu.player_list_menu, menu);
+        }
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        if (mTwoPane) {
+            boolean enabled = mCurrentPlayerId != 0;
+            MenuItem editAction = menu.findItem(R.id.edit_player);
+            editAction.setEnabled(enabled);
+            editAction.getIcon().setAlpha(enabled ? 255 : 64);
+        }
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.edit_player:
+                if (mCurrentPlayerId != 0) {
+                    Intent editIntent = new Intent(this, PlayerEdit.class);
+                    editIntent.putExtra("playerId", (int)mCurrentPlayerId);
+                    startActivityForResult(editIntent, 2);
+                    return true;
+                }
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
 }

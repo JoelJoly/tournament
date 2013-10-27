@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 
 /**
@@ -17,6 +19,7 @@ import android.view.MenuItem;
  */
 public class PlayerDetailActivity extends FragmentActivity {
 
+    long    mPlayerId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,14 +41,25 @@ public class PlayerDetailActivity extends FragmentActivity {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putLong(PlayerDetailFragment.ARG_ITEM_ID,
-                    getIntent().getLongExtra(PlayerDetailFragment.ARG_ITEM_ID, 0));
+            mPlayerId = getIntent().getLongExtra(PlayerDetailFragment.ARG_ITEM_ID, 0);
+            arguments.putLong(PlayerDetailFragment.ARG_ITEM_ID, mPlayerId);
             PlayerDetailFragment fragment = new PlayerDetailFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.player_detail_container, fragment)
                     .commit();
         }
+        else {
+            mPlayerId = savedInstanceState.getLong(PlayerDetailFragment.ARG_ITEM_ID);
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.player_detail_menu, menu);
+
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -60,6 +74,11 @@ public class PlayerDetailActivity extends FragmentActivity {
                 // http://developer.android.com/design/patterns/navigation.html#up-vs-back
                 //
                 NavUtils.navigateUpTo(this, new Intent(this, PlayerListActivity.class));
+                return true;
+            case R.id.edit_player:
+                Intent editIntent = new Intent(this, PlayerEdit.class);
+                editIntent.putExtra("playerId", (int)mPlayerId);
+                startActivityForResult(editIntent, 2);
                 return true;
         }
         return super.onOptionsItemSelected(item);
