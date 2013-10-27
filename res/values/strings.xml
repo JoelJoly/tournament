@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">tournament</string>
+    <string name="default_player_name">Player Name</string>
+    <string name="default_player_points">500</string>
+    <string name="manage_players_text">Manage players</string>
+    <string name="add_player_title">Add player</string>
+    <string name="first_name">First name</string>
+    <string name="last_name">Last name</string>
+    <string name="default_points">500</string>
+    <string name="duplicate_player_title">Invalid player</string>
+    <string name="duplicate_player_message">Player with this licence number already exist</string>
+    <string name="invalid_player_licence_message">Invalid licence number</string>
+    <string name="invalid_player_first_name_message">Invalid first name</string>
+    <string name="invalid_player_last_name_message">Invalid last name</string>
+    <string name="invalid_player_points_message">Invalid points</string>
+    <string name="allow_edit_id">Edit licence</string>
+    <string name="points">Points</string>
+    <string name="name">Name</string>
+    <string name="player_id">Licence</string>
+    <string name="select_player_management_action">Action on player</string>
+    <string name="select_player_management_edit">Edit player</string>
+    <string name="select_player_management_remove">Remove player</string>
+    <string name="confirm_player_remove_title">Erase player</string>
+    <string name="confirm_player_remove">Are your sure you want to permanently erase player %1$s %2$s?</string>
+    <string name="validate_player_remove">Erase</string>
+    <string name="search_hint">Search players</string>
+    <string name="search_title">Search</string>
+</resources>
