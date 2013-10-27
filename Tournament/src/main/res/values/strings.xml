@@ -9,6 +9,7 @@
     <string name="add_player_title">Add player</string>
     <string name="first_name">First name</string>
     <string name="last_name">Last name</string>
+    <string name="first_and_last_name">First name Last name</string>
     <string name="default_points">500</string>
     <string name="duplicate_player_title">Invalid player</string>
     <string name="duplicate_player_message">Player with this licence number already exist</string>
