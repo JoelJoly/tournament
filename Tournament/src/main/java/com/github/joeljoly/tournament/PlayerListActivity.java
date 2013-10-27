@@ -34,6 +34,11 @@ public class PlayerListActivity extends FragmentActivity
     private boolean mTwoPane;
 
     /**
+     * The fragment argument representing the current player ID.
+     */
+    private static final String ARG_PLAYER_ID = "player_id";
+
+    /**
      * The id of the currently selected player.
      */
     private long mCurrentPlayerId = 0;
@@ -58,6 +63,19 @@ public class PlayerListActivity extends FragmentActivity
         }
 
         // TODO: If exposing deep links into your app, handle intents here.
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outBundle)
+    {
+        outBundle.putLong(ARG_PLAYER_ID, mCurrentPlayerId);
+        super.onSaveInstanceState(outBundle);
+    }
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState)
+    {
+        mCurrentPlayerId = savedInstanceState.getLong(ARG_PLAYER_ID, 0);
+        super.onRestoreInstanceState(savedInstanceState);
     }
 
     /**
