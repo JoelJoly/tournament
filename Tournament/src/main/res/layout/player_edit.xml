@@ -1,104 +1,131 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <TableLayout
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <TableRow
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent" xmlns:android="http://schemas.android.com/apk/res/android">
-    <TableRow
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent">
+        android:layout_height="fill_parent">
 
     </TableRow>
 
     <TableRow
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent">
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
 
     </TableRow>
 
     <TableRow
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent">
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
 
     </TableRow>
 
     <TableRow
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent">
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
 
     </TableRow>
 
     <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:orientation="vertical" android:padding="8dp">
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical"
+        android:padding="8dp">
 
-        <TextView style="@android:style/TextAppearance.DeviceDefault.Medium" android:layout_width="wrap_content"
-                  android:layout_height="wrap_content" android:text="@string/player_id" android:id="@+id/textView2"
-                  android:layout_gravity="left|center_vertical"/>
-        <View
-                android:layout_width="fill_parent"
-                android:layout_height="2dp"
-                android:background="#FF909090" />
-        <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content">
-            <EditText
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:inputType="none"
-                    android:ems="10"
-                    android:id="@+id/idEdit"
-                    android:layout_column="0"
-                    android:numeric="integer"
-                    android:layout_gravity="center_horizontal|bottom" android:layout_weight="1" android:hint="94...."/>
-            <CheckBox
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/allow_edit_id"
-                    android:id="@+id/allowIdEdit" android:layout_gravity="center" android:checked="false"
-                    style="@android:style/TextAppearance.DeviceDefault.Medium"/>
-        </LinearLayout>
         <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/points"
-                android:id="@+id/textView" android:layout_gravity="left|center_vertical"
-                style="@android:style/TextAppearance.DeviceDefault.Medium"/>
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/player_id"
+            android:id="@+id/textView2"
+            android:layout_gravity="left|center_vertical" />
+
         <View
-                android:layout_width="fill_parent"
-                android:layout_height="2dp"
-                android:background="#FF909090" />
-        <EditText
+            android:layout_width="fill_parent"
+            android:layout_height="2dp"
+            android:background="#FF909090" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:inputType="number"
+                android:inputType="none"
                 android:ems="10"
-                android:id="@+id/pointEdit"
+                android:id="@+id/idEdit"
                 android:layout_column="0"
                 android:numeric="integer"
-                android:editable="true"
-                android:hint="@string/default_points" android:layout_gravity="left|center_vertical"/>
+                android:layout_gravity="center_horizontal|bottom"
+                android:layout_weight="1"
+                android:hint="94...." />
+
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/allow_edit_id"
+                android:id="@+id/allowIdEdit"
+                android:layout_gravity="center"
+                android:checked="false" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/points"
+            android:id="@+id/textView"
+            android:layout_gravity="left|center_vertical" />
+
         <View
-                android:layout_width="fill_parent"
-                android:layout_height="2dp"
-                android:background="#FF909090" />
-        <TextView style="@android:style/TextAppearance.DeviceDefault.Medium" android:layout_width="wrap_content"
-                  android:layout_height="wrap_content" android:text="@string/name" android:id="@+id/textView1"
-                  android:layout_gravity="left|center_vertical"/>
+            android:layout_width="fill_parent"
+            android:layout_height="2dp"
+            android:background="#FF909090" />
+
         <EditText
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/firstNameEdit" android:layout_column="0"
-                android:editable="true"
-                android:inputType="textCapWords|textPersonName" android:hint="@string/first_name"/>
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:ems="10"
+            android:id="@+id/pointEdit"
+            android:layout_column="0"
+            android:numeric="integer"
+            android:editable="true"
+            android:hint="@string/default_points"
+            android:layout_gravity="left|center_vertical" />
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="2dp"
+            android:background="#FF909090" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/name"
+            android:id="@+id/textView1"
+            android:layout_gravity="left|center_vertical" />
+
         <EditText
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/lastNameEdit"
-                android:layout_column="0"
-                android:editable="true"
-                android:inputType="textCapWords|textPersonName" android:hint="@string/last_name"/>
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/firstNameEdit"
+            android:layout_column="0"
+            android:editable="true"
+            android:inputType="textCapWords|textPersonName"
+            android:hint="@string/first_name" />
+
+        <EditText
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/lastNameEdit"
+            android:layout_column="0"
+            android:editable="true"
+            android:inputType="textCapWords|textPersonName"
+            android:hint="@string/last_name" />
 
     </LinearLayout>
 
