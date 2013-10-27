@@ -1,8 +1,14 @@
 package com.github.joeljoly.tournament;
 
 import android.app.Activity;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
+import android.support.v4.widget.CursorAdapter;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -18,7 +24,8 @@ import com.github.joeljoly.tournament.dummy.DummyContent;
  * Activities containing this fragment MUST implement the {@link Callbacks}
  * interface.
  */
-public class PlayerListFragment extends ListFragment {
+public class PlayerListFragment extends ListFragment
+        implements LoaderManager.LoaderCallbacks<Cursor> {
 
     /**
      * The serialization (saved instance state) Bundle key representing the
@@ -36,6 +43,16 @@ public class PlayerListFragment extends ListFragment {
      * The current activated item position. Only used on tablets.
      */
     private int mActivatedPosition = ListView.INVALID_POSITION;
+
+    /**
+     * The adapter to present data from database.
+     */
+    private SimpleCursorAdapter adapter;
+
+    /**
+     * Id for the adapter loader.
+     */
+    private static final int PLAYERS_LIST_LOADER = 0x01;
 
     /**
      * A callback interface that all activities containing this fragment must
@@ -70,12 +87,23 @@ public class PlayerListFragment extends ListFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // TODO: replace with a real list adapter.
-        setListAdapter(new ArrayAdapter<DummyContent.DummyItem>(
-                getActivity(),
-                android.R.layout.simple_list_item_activated_1,
-                android.R.id.text1,
-                DummyContent.ITEMS));
+        String[] uiBindFrom = {
+                TournamentDbContract.PlayersEntry.COLUMN_NAME_FIRST_NAME,
+                TournamentDbContract.PlayersEntry.COLUMN_NAME_POINTS,
+                TournamentDbContract.PlayersEntry.COLUMN_NAME_POINTS
+        };
+        int[] uiBindTo = {
+                R.id.playerNameView,
+                R.id.playerPointsView,
+                R.id.rankTextView
+        };
+        adapter = new SimpleCursorAdapter(getActivity(),
+                R.layout.player, null, uiBindFrom, uiBindTo,
+                CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+        adapter.setViewBinder(new PlayerWidget.ViewBinder(getActivity()));
+        getActivity().getSupportLoaderManager().initLoader(PLAYERS_LIST_LOADER, null, this);
+
+        setListAdapter(adapter);
     }
 
     @Override
@@ -148,4 +176,37 @@ public class PlayerListFragment extends ListFragment {
 
         mActivatedPosition = position;
     }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        String[] projection = {
+                TournamentDbContract.PlayersEntry._ID,
+                TournamentDbContract.PlayersEntry.COLUMN_NAME_FIRST_NAME,
+                TournamentDbContract.PlayersEntry.COLUMN_NAME_LAST_NAME,
+                TournamentDbContract.PlayersEntry.COLUMN_NAME_POINTS
+        };
+        String selection = null;
+        String[] selectionArgs = null;
+        if (args != null && args.containsKey("search")) {
+            String searchValue = (String) args.get("search");
+            if (!searchValue.isEmpty()) {
+                selection = TournamentDbContract.PlayersEntry.COLUMN_NAME_FIRST_NAME + " LIKE ?" +
+                        " OR " + TournamentDbContract.PlayersEntry.COLUMN_NAME_LAST_NAME + " LIKE ?";
+                selectionArgs = new String[] { "%"+searchValue+"%", "%"+searchValue+"%" };
+            }
+        }
+        CursorLoader cursorLoader = new CursorLoader(getActivity(),
+                PlayersProvider.CONTENT_URI, projection, selection, selectionArgs,
+                TournamentDbContract.PlayersEntry.COLUMN_NAME_FIRST_NAME + " ASC");
+        return cursorLoader;
+    }
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        adapter.swapCursor(cursor);
+    }
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        adapter.swapCursor(null);
+    }
+
 }

@@ -5,6 +5,7 @@
     <string name="default_player_name">Player Name</string>
     <string name="default_player_points">500</string>
     <string name="manage_players_text">Manage players</string>
+    <string name="manage_players_text_legacy">Manage players (Legacy)</string>
     <string name="add_player_title">Add player</string>
     <string name="first_name">First name</string>
     <string name="last_name">Last name</string>

@@ -23,6 +23,14 @@ public class MainPage extends Activity
         managePlayersButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 Intent managePlayersIntent;
+                managePlayersIntent = new Intent(MainPage.this, PlayerListActivity.class);
+                MainPage.this.startActivity(managePlayersIntent);
+            }
+        });
+        final Button managePlayersButtonLegacy = (Button) findViewById(R.id.managePlayersButtonOld);
+        managePlayersButtonLegacy.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                Intent managePlayersIntent;
                 managePlayersIntent = new Intent(MainPage.this, PlayerManagement.class);
                 managePlayersIntent.putExtra("caller", MainPage.class);
                 MainPage.this.startActivity(managePlayersIntent);
