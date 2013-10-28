@@ -2,15 +2,10 @@ package com.github.joeljoly.tournament;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
-import android.widget.EditText;
 import android.widget.TextView;
-
-import com.github.joeljoly.tournament.dummy.DummyContent;
 
 /**
  * A fragment representing a single Player detail screen.
