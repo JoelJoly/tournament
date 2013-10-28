@@ -109,20 +109,21 @@ public class PlayerListActivity extends FragmentActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if (mTwoPane) {
-            MenuInflater inflater = getMenuInflater();
-            inflater.inflate(R.menu.player_list_menu, menu);
-        }
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.player_list_menu, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem editAction = menu.findItem(R.id.edit_player);
         if (mTwoPane) {
             boolean enabled = mCurrentPlayerId != 0;
-            MenuItem editAction = menu.findItem(R.id.edit_player);
             editAction.setEnabled(enabled);
             editAction.getIcon().setAlpha(enabled ? 255 : 64);
+        }
+        else {
+            editAction.setVisible(false);
         }
         return super.onCreateOptionsMenu(menu);
     }
@@ -142,4 +143,8 @@ public class PlayerListActivity extends FragmentActivity
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+    }
 }

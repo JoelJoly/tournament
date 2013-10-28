@@ -8,6 +8,6 @@
           android:actionViewClass="android.widget.SearchView" />
     <item android:id="@+id/add_player"
           android:title="@string/add_player_title"
-          android:icon="@drawable/ic_add_player"
+          android:icon="@drawable/ic_action_add_person"
           android:showAsAction="ifRoom"/>
 </menu>

@@ -1,6 +1,7 @@
 package com.github.joeljoly.tournament;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -9,6 +10,9 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.SimpleCursorAdapter;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 
@@ -83,6 +87,7 @@ public class PlayerListFragment extends ListFragment
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
 
         String[] uiBindFrom = {
                 TournamentDbContract.PlayersEntry.COLUMN_NAME_FIRST_NAME,
@@ -204,6 +209,38 @@ public class PlayerListFragment extends ListFragment
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         adapter.swapCursor(null);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.fragment_player_list_menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.add_player:
+                Intent addIntent = new Intent(getActivity(), PlayerEdit.class);
+                startActivityForResult(addIntent, 1);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == Activity.RESULT_OK)
+        {
+            Integer addedPlayer = data.getIntExtra("added", -1);
+            Integer removedPlayer = data.getIntExtra("removed", -1);
+            // if we only updated one player, a data changed notification will be enough
+            if (addedPlayer == removedPlayer)
+                adapter.notifyDataSetChanged();
+            else
+                // otherwise refresh the view by querying a new loader
+                getActivity().getSupportLoaderManager().restartLoader(PLAYERS_LIST_LOADER, null, this);
+        }
     }
 
 }
