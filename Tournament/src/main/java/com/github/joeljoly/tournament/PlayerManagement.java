@@ -209,6 +209,14 @@ public class PlayerManagement extends FragmentActivity
         };
         String selection = null;
         String[] selectionArgs = null;
+        if (args != null && args.containsKey("search")) {
+            String searchValue = (String) args.get("search");
+            if (!searchValue.isEmpty()) {
+                selection = TournamentDbContract.PlayersEntry.COLUMN_NAME_FIRST_NAME + " LIKE ?" +
+                    " OR " + TournamentDbContract.PlayersEntry.COLUMN_NAME_LAST_NAME + " LIKE ?";
+                selectionArgs = new String[] { "%"+searchValue+"%", "%"+searchValue+"%" };
+            }
+        }
         CursorLoader cursorLoader = new CursorLoader(this,
                 PlayersProvider.CONTENT_URI, projection, selection, selectionArgs, TournamentDbContract.PlayersEntry.COLUMN_NAME_FIRST_NAME + " ASC");
         return cursorLoader;

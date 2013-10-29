@@ -1,8 +1,11 @@
 package com.github.joeljoly.tournament;
 
 import android.app.Activity;
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
@@ -15,6 +18,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.SearchView;
 
 /**
  * A list fragment representing a list of Players. This fragment
@@ -214,6 +218,26 @@ public class PlayerListFragment extends ListFragment
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.fragment_player_list_menu, menu);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
+            SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+            searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
+            searchView.setIconifiedByDefault(true);
+            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextSubmit(String query) {
+                    return false;  //To change body of implemented methods use File | Settings | File Templates.
+                }
+
+                @Override
+                public boolean onQueryTextChange(String newText) {
+                    Bundle bundle = new Bundle();
+                    bundle.putString("search", newText);
+                    getActivity().getSupportLoaderManager().restartLoader(PLAYERS_LIST_LOADER, bundle, PlayerListFragment.this);
+                    return true;
+                }
+            });
+        }
         super.onCreateOptionsMenu(menu, inflater);
     }
 
