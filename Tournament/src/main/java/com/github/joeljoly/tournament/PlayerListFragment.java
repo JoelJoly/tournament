@@ -220,13 +220,15 @@ public class PlayerListFragment extends ListFragment
         inflater.inflate(R.menu.fragment_player_list_menu, menu);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
-            SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+            MenuItem searchItem = menu.findItem(R.id.search);
+            SearchView searchView = (SearchView) searchItem.getActionView();
             searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
+            searchView.setSubmitButtonEnabled(false);
             searchView.setIconifiedByDefault(true);
             searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                 @Override
                 public boolean onQueryTextSubmit(String query) {
-                    return false;  //To change body of implemented methods use File | Settings | File Templates.
+                    return false;
                 }
 
                 @Override
@@ -235,6 +237,32 @@ public class PlayerListFragment extends ListFragment
                     bundle.putString("search", newText);
                     getActivity().getSupportLoaderManager().restartLoader(PLAYERS_LIST_LOADER, bundle, PlayerListFragment.this);
                     return true;
+                }
+            });
+            // the following should reset the search but is not called
+            // see http://stackoverflow.com/questions/9327826/searchviews-oncloselistener-doesnt-work
+            searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+                @Override
+                public boolean onClose() {
+                    // reset search filter when search is closed
+                    Bundle emptyBundle = new Bundle();
+                    getActivity().getSupportLoaderManager().restartLoader(PLAYERS_LIST_LOADER, emptyBundle, PlayerListFragment.this);
+                    return false; // let normal behavior proceed
+                }
+            });
+            // workaround for the setOnCloseListener() problem above
+            searchItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+                @Override
+                public boolean onMenuItemActionExpand(MenuItem menuItem) {
+                    return true; // true if the item should expand
+                }
+
+                @Override
+                public boolean onMenuItemActionCollapse(MenuItem menuItem) {
+                    // reset search filter when search item is collapsed
+                    Bundle emptyBundle = new Bundle();
+                    getActivity().getSupportLoaderManager().restartLoader(PLAYERS_LIST_LOADER, emptyBundle, PlayerListFragment.this);
+                    return true; // true if the item should collapse
                 }
             });
         }
