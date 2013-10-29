@@ -14,6 +14,8 @@
     <string name="duplicate_player_title">Invalid player</string>
     <string name="duplicate_player_message">Player with this licence number already exist</string>
     <string name="edit_player_title">Edit</string>
+    <string name="erase_player_title">Erase</string>
+    <string name="error_loading_player">Error while loading player %1$d detail: %2$s</string>
     <string name="invalid_player_licence_message">Invalid licence number</string>
     <string name="invalid_player_first_name_message">Invalid first name</string>
     <string name="invalid_player_last_name_message">Invalid last name</string>

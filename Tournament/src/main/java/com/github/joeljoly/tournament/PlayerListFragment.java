@@ -184,9 +184,10 @@ public class PlayerListFragment extends ListFragment
     }
 
     private void setActivatedPosition(int position) {
-        if (position == ListView.INVALID_POSITION) {
+        if (mActivatedPosition != ListView.INVALID_POSITION) {
             getListView().setItemChecked(mActivatedPosition, false);
-        } else {
+        }
+        if (position != ListView.INVALID_POSITION) {
             getListView().setItemChecked(position, true);
         }
 
@@ -236,6 +237,7 @@ public class PlayerListFragment extends ListFragment
             searchView.setSubmitButtonEnabled(false);
             searchView.setIconifiedByDefault(true);
             searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                private boolean mEmptySearchText = true;
                 @Override
                 public boolean onQueryTextSubmit(String query) {
                     return false;
@@ -245,7 +247,11 @@ public class PlayerListFragment extends ListFragment
                 public boolean onQueryTextChange(String newText) {
                     Bundle bundle = new Bundle();
                     bundle.putString("search", newText);
-                    getActivity().getSupportLoaderManager().restartLoader(PLAYERS_LIST_LOADER, bundle, PlayerListFragment.this);
+                    // method gets called when menu is initialized, avoid unnecessary reloads
+                    boolean isTextEmpty = newText.isEmpty();
+                    if (!isTextEmpty || !mEmptySearchText)
+                        getActivity().getSupportLoaderManager().restartLoader(PLAYERS_LIST_LOADER, bundle, PlayerListFragment.this);
+                    mEmptySearchText = isTextEmpty;
                     return true;
                 }
             });
@@ -290,9 +296,38 @@ public class PlayerListFragment extends ListFragment
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == Activity.RESULT_OK) {
+            onPlayerModified(data);
+        }
+    }
+
     public void onPlayerModified(Intent data) {
         Integer addedPlayer = data.getIntExtra("added", -1);
         Integer removedPlayer = data.getIntExtra("removed", -1);
+        // check if player has been removed
+        if (addedPlayer == -1 && removedPlayer != -1) {
+            TournamentDataDbHelper database = new TournamentDataDbHelper(getActivity());
+            database.deletePlayer(removedPlayer);
+            if (mActivatedPosition != ListView.INVALID_POSITION) {
+                long selectedItemId = getListView().getItemIdAtPosition(mActivatedPosition);
+                if (selectedItemId == removedPlayer) {
+                    int newPosition = ListView.INVALID_POSITION;
+                    // select next player (if possible)
+                    if (mActivatedPosition + 1 < getListAdapter().getCount()) {
+                        newPosition = mActivatedPosition + 1;
+                    } // otherwise select previous player (if possible)
+                    else if (mActivatedPosition > 0){
+                        newPosition = mActivatedPosition - 1;
+                        setActivatedPosition(newPosition);
+                    }
+                    long id = newPosition != ListView.INVALID_POSITION ?
+                            getListAdapter().getItemId(newPosition) : -1;
+                    mCallbacks.onItemSelected(id);
+                }
+            }
+        }
         // if we only updated one player, a data changed notification will be enough
         if (addedPlayer == removedPlayer)
             adapter.notifyDataSetChanged();

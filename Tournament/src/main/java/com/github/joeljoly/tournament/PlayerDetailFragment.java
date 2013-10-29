@@ -1,6 +1,8 @@
 package com.github.joeljoly.tournament;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -11,6 +13,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.sql.SQLException;
 
 /**
  * A fragment representing a single Player detail screen.
@@ -71,8 +76,17 @@ public class PlayerDetailFragment extends Fragment {
         setHasOptionsMenu(true);
 
         if (getArguments().containsKey(ARG_ITEM_ID)) {
-            int playerId = new Long(getArguments().getLong(ARG_ITEM_ID)).intValue();
-            mItem = new TournamentDataDbHelper(getActivity()).getPlayer(playerId);
+            int playerId = Long.valueOf(getArguments().getLong(ARG_ITEM_ID)).intValue();
+            if (playerId >= 0) {
+                try {
+                    mItem = new TournamentDataDbHelper(getActivity()).getPlayer(playerId);
+                } catch (java.lang.Exception e) {
+                    Toast.makeText(getActivity(),
+                            getString(R.string.error_loading_player, playerId, e.getMessage()),
+                            Toast.LENGTH_LONG)
+                            .show();
+                }
+            }
         }
     }
 
@@ -119,7 +133,9 @@ public class PlayerDetailFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.player_detail_menu, menu);
+        if (mItem != null) {
+            inflater.inflate(R.menu.player_detail_menu, menu);
+        }
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -130,6 +146,23 @@ public class PlayerDetailFragment extends Fragment {
                 Intent editIntent = new Intent(getActivity(), PlayerEdit.class);
                 editIntent.putExtra("playerId", mItem.getId());
                 startActivityForResult(editIntent, 2);
+                return true;
+            case R.id.erase_player:
+                new AlertDialog.Builder(getActivity())
+                        .setTitle(R.string.confirm_player_remove_title)
+                        .setMessage(getString(R.string.confirm_player_remove, mItem.getFirstName(), mItem.getLastName()))
+                        .setNegativeButton(android.R.string.cancel, null)
+                        .setPositiveButton(R.string.validate_player_remove,
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        Intent returnIntent;
+                                        returnIntent = new Intent();
+                                        returnIntent.putExtra("removed", mItem.getId());
+                                        mCallbacks.onPlayerChanged(returnIntent);
+                                    }
+                                })
+                        .show();
                 return true;
         }
         return super.onOptionsItemSelected(item);
