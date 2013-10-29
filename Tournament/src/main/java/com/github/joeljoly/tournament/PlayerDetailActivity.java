@@ -4,8 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 
 /**
@@ -17,7 +15,8 @@ import android.view.MenuItem;
  * This activity is mostly just a 'shell' activity containing nothing
  * more than a {@link PlayerDetailFragment}.
  */
-public class PlayerDetailActivity extends FragmentActivity {
+public class PlayerDetailActivity extends FragmentActivity
+    implements PlayerDetailFragment.Callbacks {
 
     long    mPlayerId;
     @Override
@@ -55,14 +54,6 @@ public class PlayerDetailActivity extends FragmentActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.player_detail_menu, menu);
-
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
@@ -75,12 +66,27 @@ public class PlayerDetailActivity extends FragmentActivity {
                 //
                 NavUtils.navigateUpTo(this, new Intent(this, PlayerListActivity.class));
                 return true;
-            case R.id.edit_player:
-                Intent editIntent = new Intent(this, PlayerEdit.class);
-                editIntent.putExtra("playerId", (int)mPlayerId);
-                startActivityForResult(editIntent, 2);
-                return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onPlayerChanged(Intent data) {
+        setResult(RESULT_OK, data);
+        mPlayerId = data.getIntExtra("added", -1);
+        if (mPlayerId == -1) {
+            // if the player has been erased go back up to player list screen
+//            NavUtils.navigateUpTo(this, new Intent(this, PlayerListActivity.class));
+            this.finish();
+        }
+        else {
+            Bundle arguments = new Bundle();
+            arguments.putLong(PlayerDetailFragment.ARG_ITEM_ID, mPlayerId);
+            PlayerDetailFragment fragment = new PlayerDetailFragment();
+            fragment.setArguments(arguments);
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.player_detail_container, fragment)
+                    .commit();
+        }
     }
 }

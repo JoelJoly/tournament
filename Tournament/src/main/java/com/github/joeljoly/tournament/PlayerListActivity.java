@@ -1,5 +1,6 @@
 package com.github.joeljoly.tournament;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -22,10 +23,12 @@ import android.view.MenuItem;
  * <p>
  * This activity also implements the required
  * {@link PlayerListFragment.Callbacks} interface
- * to listen for item selections.
+ * to listen for item selections and
+ * {@link PlayerDetailFragment.Callbacks} interface
+ * to listen for player modifications.
  */
 public class PlayerListActivity extends FragmentActivity
-        implements PlayerListFragment.Callbacks {
+        implements PlayerListFragment.Callbacks, PlayerDetailFragment.Callbacks {
 
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
@@ -37,11 +40,6 @@ public class PlayerListActivity extends FragmentActivity
      * The fragment argument representing the current player ID.
      */
     private static final String ARG_PLAYER_ID = "player_id";
-
-    /**
-     * The id of the currently selected player.
-     */
-    private long mCurrentPlayerId = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,23 +57,10 @@ public class PlayerListActivity extends FragmentActivity
             // 'activated' state when touched.
             ((PlayerListFragment) getSupportFragmentManager()
                     .findFragmentById(R.id.player_list))
-                    .setActivateOnItemClick(true);
+                    .setTrackSelectedItem(true);
         }
 
         // TODO: If exposing deep links into your app, handle intents here.
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outBundle)
-    {
-        outBundle.putLong(ARG_PLAYER_ID, mCurrentPlayerId);
-        super.onSaveInstanceState(outBundle);
-    }
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState)
-    {
-        mCurrentPlayerId = savedInstanceState.getLong(ARG_PLAYER_ID, 0);
-        super.onRestoreInstanceState(savedInstanceState);
     }
 
     /**
@@ -84,7 +69,6 @@ public class PlayerListActivity extends FragmentActivity
      */
     @Override
     public void onItemSelected(long id) {
-        mCurrentPlayerId = id;
         if (mTwoPane) {
             // In two-pane mode, show the detail view in this activity by
             // adding or replacing the detail fragment using a
@@ -96,55 +80,27 @@ public class PlayerListActivity extends FragmentActivity
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.player_detail_container, fragment)
                     .commit();
-            // rebuild the menu
-            supportInvalidateOptionsMenu();
         } else {
             // In single-pane mode, simply start the detail activity
             // for the selected item ID.
             Intent detailIntent = new Intent(this, PlayerDetailActivity.class);
             detailIntent.putExtra(PlayerDetailFragment.ARG_ITEM_ID, id);
-            startActivity(detailIntent);
+            startActivityForResult(detailIntent, 1);
         }
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.player_list_menu, menu);
-        return super.onCreateOptionsMenu(menu);
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == Activity.RESULT_OK) {
+            onPlayerChanged(data);
+        }
     }
 
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        MenuItem editAction = menu.findItem(R.id.edit_player);
-        if (mTwoPane) {
-            boolean enabled = mCurrentPlayerId != 0;
-            editAction.setEnabled(enabled);
-            editAction.getIcon().setAlpha(enabled ? 255 : 64);
-        }
-        else {
-            editAction.setVisible(false);
-        }
-        return super.onCreateOptionsMenu(menu);
+    public void onPlayerChanged(Intent data) {
+        ((PlayerListFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.player_list))
+                .onPlayerModified(data);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.edit_player:
-                if (mCurrentPlayerId != 0) {
-                    Intent editIntent = new Intent(this, PlayerEdit.class);
-                    editIntent.putExtra("playerId", (int)mCurrentPlayerId);
-                    startActivityForResult(editIntent, 2);
-                    return true;
-                }
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-    }
 }

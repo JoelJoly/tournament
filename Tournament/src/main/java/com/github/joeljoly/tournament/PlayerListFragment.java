@@ -17,6 +17,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SearchView;
 
@@ -48,6 +49,11 @@ public class PlayerListFragment extends ListFragment
      * The current activated item position. Only used on tablets.
      */
     private int mActivatedPosition = ListView.INVALID_POSITION;
+
+    /**
+     * Flag to know if selected item must be tracked. Only used on tablets.
+     */
+    private boolean mTrackSelectedItem = false;
 
     /**
      * The adapter to present data from database.
@@ -147,6 +153,9 @@ public class PlayerListFragment extends ListFragment
     public void onListItemClick(ListView listView, View view, int position, long id) {
         super.onListItemClick(listView, view, position, id);
 
+        if (mTrackSelectedItem) {
+            setActivatedPosition(position);
+        }
         // Notify the active callbacks interface (the activity, if the
         // fragment is attached to one) that an item has been selected.
         mCallbacks.onItemSelected(id);
@@ -165,10 +174,11 @@ public class PlayerListFragment extends ListFragment
      * Turns on activate-on-click mode. When this mode is on, list items will be
      * given the 'activated' state when touched.
      */
-    public void setActivateOnItemClick(boolean activateOnItemClick) {
+    public void setTrackSelectedItem(boolean trackSelectedItem) {
+        mTrackSelectedItem = trackSelectedItem;
         // When setting CHOICE_MODE_SINGLE, ListView will automatically
         // give items the 'activated' state when touched.
-        getListView().setChoiceMode(activateOnItemClick
+        getListView().setChoiceMode(mTrackSelectedItem
                 ? ListView.CHOICE_MODE_SINGLE
                 : ListView.CHOICE_MODE_NONE);
     }
@@ -280,19 +290,15 @@ public class PlayerListFragment extends ListFragment
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == Activity.RESULT_OK)
-        {
-            Integer addedPlayer = data.getIntExtra("added", -1);
-            Integer removedPlayer = data.getIntExtra("removed", -1);
-            // if we only updated one player, a data changed notification will be enough
-            if (addedPlayer == removedPlayer)
-                adapter.notifyDataSetChanged();
-            else
-                // otherwise refresh the view by querying a new loader
-                getActivity().getSupportLoaderManager().restartLoader(PLAYERS_LIST_LOADER, null, this);
-        }
+    public void onPlayerModified(Intent data) {
+        Integer addedPlayer = data.getIntExtra("added", -1);
+        Integer removedPlayer = data.getIntExtra("removed", -1);
+        // if we only updated one player, a data changed notification will be enough
+        if (addedPlayer == removedPlayer)
+            adapter.notifyDataSetChanged();
+        else
+            // otherwise refresh the view by querying a new loader
+            getActivity().getSupportLoaderManager().restartLoader(PLAYERS_LIST_LOADER, null, this);
     }
 
 }
