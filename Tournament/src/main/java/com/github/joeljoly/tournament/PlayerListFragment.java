@@ -310,7 +310,10 @@ public class PlayerListFragment extends ListFragment
         if (addedPlayer == -1 && removedPlayer != -1) {
             TournamentDataDbHelper database = new TournamentDataDbHelper(getActivity());
             database.deletePlayer(removedPlayer);
-            if (mActivatedPosition != ListView.INVALID_POSITION) {
+        }
+        if (mTrackSelectedItem) {
+            long newItemToSelect = addedPlayer;
+            if (addedPlayer == -1 && mActivatedPosition != ListView.INVALID_POSITION) {
                 long selectedItemId = getListView().getItemIdAtPosition(mActivatedPosition);
                 if (selectedItemId == removedPlayer) {
                     int newPosition = ListView.INVALID_POSITION;
@@ -322,11 +325,11 @@ public class PlayerListFragment extends ListFragment
                         newPosition = mActivatedPosition - 1;
                         setActivatedPosition(newPosition);
                     }
-                    long id = newPosition != ListView.INVALID_POSITION ?
+                    newItemToSelect = newPosition != ListView.INVALID_POSITION ?
                             getListAdapter().getItemId(newPosition) : -1;
-                    mCallbacks.onItemSelected(id);
                 }
             }
+            mCallbacks.onItemSelected(newItemToSelect);
         }
         // if we only updated one player, a data changed notification will be enough
         if (addedPlayer == removedPlayer)

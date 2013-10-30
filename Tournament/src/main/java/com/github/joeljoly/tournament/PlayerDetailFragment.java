@@ -132,6 +132,11 @@ public class PlayerDetailFragment extends Fragment {
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         if (mItem != null) {
             inflater.inflate(R.menu.player_detail_menu, menu);
@@ -171,6 +176,8 @@ public class PlayerDetailFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK) {
+            // this should be safe to be executed for a fragment
+            // would the activity be detached the dummy implementation would be called
             mCallbacks.onPlayerChanged(data);
         }
     }

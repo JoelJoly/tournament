@@ -41,6 +41,11 @@ public class PlayerListActivity extends FragmentActivity
      */
     private static final String ARG_PLAYER_ID = "player_id";
 
+    /**
+     * Store the activity result data.
+     */
+    private Intent mActivityResultData;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,7 +97,9 @@ public class PlayerListActivity extends FragmentActivity
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK) {
-            onPlayerChanged(data);
+            // don't act on result yet, this may cause exception when doing fragment transaction
+            // see http://www.androiddesignpatterns.com/2013/08/fragment-transaction-commit-state-loss.html
+            mActivityResultData = data;
         }
     }
 
@@ -103,4 +110,14 @@ public class PlayerListActivity extends FragmentActivity
                 .onPlayerModified(data);
     }
 
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        if (mActivityResultData != null) {
+            // Commit your transactions here.
+            onPlayerChanged(mActivityResultData);
+        }
+        // Reset the data back to null for next time.
+        mActivityResultData = null;
+    }
 }
