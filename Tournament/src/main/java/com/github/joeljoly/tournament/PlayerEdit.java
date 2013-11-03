@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
 import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -87,10 +88,10 @@ public class PlayerEdit extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                Intent backIntent;
-                backIntent = new Intent(this, PlayerManagement.class);
-                backIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(backIntent);
+                Intent upIntent = NavUtils.getParentActivityIntent(this);
+                // no intent filter from the application, don't need to check shouldUpRecreateTask
+                upIntent.putExtra(PlayerDetailFragment.ARG_ITEM_ID, Long.valueOf(originaId));
+                NavUtils.navigateUpTo(this, upIntent);
                 return true;
             case R.id.player_add_validate:
                 Integer licenceNumber;

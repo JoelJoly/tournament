@@ -40,7 +40,14 @@
             <meta-data android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
-        <activity android:name=".PlayerEdit" android:label="@string/add_player_title"/>
+        <activity
+            android:name=".PlayerEdit"
+            android:label="@string/add_player_title"
+            android:parentActivityName=".PlayerDetailActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".PlayerListActivity" />
+        </activity>
         <provider
             android:authorities="com.github.joeljoly.tournament.PlayersProvider"
             android:name="com.github.joeljoly.tournament.PlayersProvider"/>

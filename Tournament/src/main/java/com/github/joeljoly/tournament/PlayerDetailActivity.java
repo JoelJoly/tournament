@@ -40,7 +40,8 @@ public class PlayerDetailActivity extends FragmentActivity
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
             Bundle arguments = new Bundle();
-            mPlayerId = getIntent().getLongExtra(PlayerDetailFragment.ARG_ITEM_ID, 0);
+            Intent intent = getIntent();
+            mPlayerId = intent.getLongExtra(PlayerDetailFragment.ARG_ITEM_ID, 0);
             arguments.putLong(PlayerDetailFragment.ARG_ITEM_ID, mPlayerId);
             PlayerDetailFragment fragment = new PlayerDetailFragment();
             fragment.setArguments(arguments);
