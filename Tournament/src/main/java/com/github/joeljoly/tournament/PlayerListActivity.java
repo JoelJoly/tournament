@@ -65,6 +65,16 @@ public class PlayerListActivity extends FragmentActivity
                     .setTrackSelectedItem(true);
         }
 
+        // if in two panes mode and we had an hint on selected player, do the selection
+        Intent creationIntent = getIntent();
+        if (mTwoPane && creationIntent != null &&
+                creationIntent.hasExtra(PlayerDetailFragment.ARG_ITEM_ID)) {
+            Long playerId = creationIntent.getLongExtra(PlayerDetailFragment.ARG_ITEM_ID, -1);
+            if (playerId != -1) {
+                onItemSelected(playerId);
+            }
+        }
+
         // TODO: If exposing deep links into your app, handle intents here.
     }
 

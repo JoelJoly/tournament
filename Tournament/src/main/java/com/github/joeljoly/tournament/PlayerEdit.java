@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.Toast;
 
 /**
  * Created with IntelliJ IDEA.
@@ -26,7 +27,7 @@ public class PlayerEdit extends Activity {
     private EditText idEdit;
     private EditText pointsEdit;
     private CheckBox allowIdEdit;
-    Integer originaId;
+    Integer originalId;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,8 +66,8 @@ public class PlayerEdit extends Activity {
                 throw new IllegalStateException("Cannot find player based on the given Id");
             firstNameEdit.setText(player.getFirstName());
             lastNameEdit.setText(player.getLastName());
-            originaId = player.getId();
-            idEdit.setText(originaId.toString());
+            originalId = player.getId();
+            idEdit.setText(originalId.toString());
             pointsEdit.setText(player.getPoints().toString());
             allowIdEdit.setChecked(false);
         }
@@ -88,9 +89,24 @@ public class PlayerEdit extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                Intent upIntent = NavUtils.getParentActivityIntent(this);
+                Intent upIntent = null;
+                String parentActivityName = getString(R.string.edit_player_parent_activity);
+                String believedParentActivityName = NavUtils.getParentActivityName(this);
+                // NavUtils does not handle parent name overriding, do it ourselves
+                if (parentActivityName != believedParentActivityName) {
+                    try {
+                        Class dynamicUpActivityClass = Class.forName(parentActivityName);
+                        upIntent = new Intent(this, dynamicUpActivityClass);
+                    }
+                    catch (ClassNotFoundException e) {
+                        Toast.makeText(this, "Error finding the parent activity:" + e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                }
+                if (upIntent == null) {
+                    upIntent = NavUtils.getParentActivityIntent(this);
+                }
                 // no intent filter from the application, don't need to check shouldUpRecreateTask
-                upIntent.putExtra(PlayerDetailFragment.ARG_ITEM_ID, Long.valueOf(originaId));
+                upIntent.putExtra(PlayerDetailFragment.ARG_ITEM_ID, Long.valueOf(originalId));
                 NavUtils.navigateUpTo(this, upIntent);
                 return true;
             case R.id.player_add_validate:
@@ -142,10 +158,10 @@ public class PlayerEdit extends Activity {
                 TournamentDataDbHelper database;
                 database = new TournamentDataDbHelper(this);
                 // editing existing player
-                if (originaId != null)
+                if (originalId != null)
                 {
                     // id hasn't changed, just update contact data
-                    if (originaId.equals(licenceNumber))
+                    if (originalId.equals(licenceNumber))
                     {
                         database.updateContact(newPlayer);
                     }
@@ -157,7 +173,7 @@ public class PlayerEdit extends Activity {
                             // when other tables are created, update every table that references the old id with the new one
 
                             // remove old entry
-                            database.deletePlayer(originaId);
+                            database.deletePlayer(originalId);
                         }
                         else
                             newPlayer = null;
@@ -173,8 +189,8 @@ public class PlayerEdit extends Activity {
                     Intent returnIntent;
                     returnIntent = new Intent();
                     returnIntent.putExtra("added", newPlayer.getId());
-                    if (originaId != null)
-                        returnIntent.putExtra("removed", originaId);
+                    if (originalId != null)
+                        returnIntent.putExtra("removed", originalId);
                     setResult(RESULT_OK,returnIntent);
                     this.finish();
                 }

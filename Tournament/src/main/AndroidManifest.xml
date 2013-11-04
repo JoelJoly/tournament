@@ -43,10 +43,12 @@
         <activity
             android:name=".PlayerEdit"
             android:label="@string/add_player_title"
-            android:parentActivityName=".PlayerDetailActivity" >
+            android:parentActivityName="@string/edit_player_parent_activity" >
+            <!-- Use fully qualified name for parent activity as it is used in the code to find
+            the correct class as NavUtils is not able to find overridden string value -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".PlayerListActivity" />
+                android:value="@string/edit_player_parent_activity" />
         </activity>
         <provider
             android:authorities="com.github.joeljoly.tournament.PlayersProvider"
