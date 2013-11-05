@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/edit_player"
+          android:title="@string/edit_player_title"
+          android:icon="@drawable/ic_action_edit"
+          android:showAsAction="ifRoom"/>
+    <item android:id="@+id/erase_player"
+        android:title="@string/erase_player_title"
+        android:showAsAction="never"/>
+</menu>

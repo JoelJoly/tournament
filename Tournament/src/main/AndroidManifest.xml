@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.github.joeljoly.tournament"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk
+        android:minSdkVersion="11"
+        android:targetSdkVersion="18" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <activity
+            android:name="com.github.joeljoly.tournament.PlayerListActivity"
+            android:label="@string/app_name" >
+        </activity>
+        <activity
+            android:name="com.github.joeljoly.tournament.PlayerDetailActivity"
+            android:label="@string/title_player_detail"
+            android:parentActivityName=".PlayerListActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".PlayerListActivity" />
+        </activity>
+
+        <activity android:name="MainPage"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".PlayerEdit"
+            android:label="@string/add_player_title"
+            android:parentActivityName="@string/edit_player_parent_activity" >
+            <!-- Use fully qualified name for parent activity as it is used in the code to find
+            the correct class as NavUtils is not able to find overridden string value -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="@string/edit_player_parent_activity" />
+        </activity>
+        <provider
+            android:authorities="com.github.joeljoly.tournament.PlayersProvider"
+            android:name="com.github.joeljoly.tournament.PlayersProvider"/>
+
+    </application>
+
+</manifest>

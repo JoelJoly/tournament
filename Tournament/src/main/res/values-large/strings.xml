@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="edit_player_parent_activity">com.github.joeljoly.tournament.PlayerListActivity</string>
+</resources>

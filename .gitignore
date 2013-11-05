@@ -18,6 +18,11 @@ local.properties
 # Eclipse project files
 .classpath
 .project
+.gradle
+/local.properties
+/.idea/workspace.xml
+.DS_Store
 
-# idea project user specific files
-.idea/workspace.xml
+# IntelliJ project files
+/.idea/
+/Tournament/Tournament.iml
