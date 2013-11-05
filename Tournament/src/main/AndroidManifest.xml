@@ -8,6 +8,8 @@
         android:minSdkVersion="11"
         android:targetSdkVersion="18" />
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
@@ -25,28 +27,41 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".PlayerListActivity" />
         </activity>
-
-        <activity android:name="MainPage"
-            android:label="@string/app_name">
+        <activity
+            android:name="com.github.joeljoly.tournament.MainPage"
+            android:label="@string/app_name" >
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
-            android:name=".PlayerEdit"
+            android:name="com.github.joeljoly.tournament.PlayerEdit"
             android:label="@string/add_player_title"
             android:parentActivityName="@string/edit_player_parent_activity" >
-            <!-- Use fully qualified name for parent activity as it is used in the code to find
-            the correct class as NavUtils is not able to find overridden string value -->
+
+            <!--
+            Use fully qualified name for parent activity as it is used in the code to find
+            the correct class as NavUtils is not able to find overridden string value
+            -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="@string/edit_player_parent_activity" />
         </activity>
-        <provider
-            android:authorities="com.github.joeljoly.tournament.PlayersProvider"
-            android:name="com.github.joeljoly.tournament.PlayersProvider"/>
 
+        <provider
+            android:name="com.github.joeljoly.tournament.PlayersProvider"
+            android:authorities="com.github.joeljoly.tournament.PlayersProvider" />
+
+        <activity
+            android:name="com.github.joeljoly.tournament.ScrapingActivity"
+            android:label="@string/title_activity_scraping"
+            android:parentActivityName="MainPage" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="MainPage" />
+        </activity>
     </application>
 
 </manifest>

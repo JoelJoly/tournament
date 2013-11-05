@@ -9,5 +9,10 @@
             android:layout_height="wrap_content"
             android:text="@string/manage_players_text"
             android:id="@+id/managePlayersButton"/>
+    <Button
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/scraping_button_title"
+        android:id="@+id/scrapingButton"/>
 </LinearLayout>
 

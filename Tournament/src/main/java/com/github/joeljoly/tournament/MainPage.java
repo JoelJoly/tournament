@@ -19,12 +19,21 @@ public class MainPage extends Activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-        final Button managePlayersButton = (Button) findViewById(R.id.managePlayersButton);
+        Button managePlayersButton = (Button) findViewById(R.id.managePlayersButton);
         managePlayersButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 Intent managePlayersIntent;
                 managePlayersIntent = new Intent(MainPage.this, PlayerListActivity.class);
                 MainPage.this.startActivity(managePlayersIntent);
+            }
+        });
+
+        Button scrapePlayersButton = (Button) findViewById(R.id.scrapingButton);
+        scrapePlayersButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                Intent scrapePlayersIntent;
+                scrapePlayersIntent = new Intent(MainPage.this, ScrapingActivity.class);
+                MainPage.this.startActivity(scrapePlayersIntent);
             }
         });
     }
