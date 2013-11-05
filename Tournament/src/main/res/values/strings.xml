@@ -33,6 +33,7 @@
     <string name="confirm_player_remove">Are your sure you want to permanently erase player %1$s %2$s?</string>
     <string name="validate_player_remove">Erase</string>
     <string name="scraping_button_title">Find players on web</string>
+    <string name="scraping_web_target">http://www.fftt.com/sportif/pclassement/php3/FFTTfo.php3?Menu=J2</string>
     <string name="search_hint">Search players</string>
     <string name="search_title">Search</string>
     <string name="title_activity_scraping">Web data retrieval</string>
