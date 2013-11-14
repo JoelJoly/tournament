@@ -1,6 +1,7 @@
 package com.github.joeljoly.tournament;
 
 import android.os.AsyncTask;
+import android.os.Environment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
@@ -13,13 +14,16 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Toast;
 
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.AbstractHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 
-import java.util.List;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 public class ScrapingActivity extends ActionBarActivity {
 
@@ -76,7 +80,7 @@ public class ScrapingActivity extends ActionBarActivity {
             super.onCreateView(inflater, container, savedInstanceState);
 
             FragmentManager fragmentManager = getFragmentManager();
-            Fragment fragment = fragmentManager.findFragmentByTag(HttpRequestsFragment.TAG);
+            HttpRequestsFragment fragment = (HttpRequestsFragment)fragmentManager.findFragmentByTag(HttpRequestsFragment.TAG);
             if (fragment == null) {
                 fragment = new HttpRequestsFragment();
                 fragment.setTargetFragment(this, httpRequestIntentCode);
@@ -100,42 +104,80 @@ public class ScrapingActivity extends ActionBarActivity {
          */
         private AbstractHttpClient mClient;
 
-        private class CookieRetrieval extends AsyncTask<String, Integer, List<Cookie>> {
+        private class TeamPlayerRequest extends AsyncTask<String, Integer, String> {
             private Exception mExceptionDuringBackground;
 
-            public CookieRetrieval(AbstractHttpClient client) {
+            public TeamPlayerRequest(AbstractHttpClient client) {
                 mClient = client;
             }
             @Override
-            protected List<Cookie> doInBackground(String... urls) {
+            protected String doInBackground(String... urls) {
                 HttpGet request = new HttpGet(urls[0]);
                 try {
+                    // execute request
                     HttpResponse response = mClient.execute(request);
+                    // getting the first page is roughly 10% of the job
+                    publishProgress(10);
+                    int responseCode = response.getStatusLine().getStatusCode();
+                    String htmlBody = "";
+                    switch(responseCode)
+                    {
+                        case 200:
+                            HttpEntity entity = response.getEntity();
+                            if(entity != null)
+                            {
+                                htmlBody = EntityUtils.toString(entity);
+                            }
+                            break;
+                        default:
+                            throw new RuntimeException("Cannot retrieve page '" +
+                                    urls[0] + "' invalid response code: " +
+                                    new Integer(responseCode).toString());
+                    }
+                    // TODO
+                    // job's done
+                    publishProgress(100);
+                    return htmlBody;
                 } catch (Exception e) {
                     mExceptionDuringBackground = e;
                     cancel(true);
                 }
-                return mClient.getCookieStore().getCookies();
+                return "";
             }
             @Override
+            // get integer values as percentages
             protected void onProgressUpdate(Integer... values) {
                 super.onProgressUpdate(values);
-                getActivity().setProgress(values[0] * 1000);
+                // convert from [0, 100] to [0, 10000]
+                getActivity().setProgress(values[0] * 100);
             }
 
             @Override
-            protected void onPostExecute(List<Cookie> cookies) {
-                super.onPostExecute(cookies);
-                for (Cookie cookie : cookies) {
-                    Toast.makeText(getActivity(), "cookie " + cookie.getName() + " = " + cookie.getValue(), Toast.LENGTH_LONG).show();
-                }
+            protected void onPostExecute(String result) {
+                super.onPostExecute(result);
+                Toast.makeText(getActivity(), "result " + result, Toast.LENGTH_LONG).show();
+                writeToFile(result);
             }
 
             @Override
-            protected void onCancelled(List<Cookie> cookies) {
-                super.onCancelled(cookies);
+            protected void onCancelled(String result) {
+                super.onCancelled(result);
                 if (mExceptionDuringBackground != null)
-                    Toast.makeText(getActivity(), "Connexion error error" + mExceptionDuringBackground.getMessage(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), "Connexion error: " + mExceptionDuringBackground.getMessage(), Toast.LENGTH_LONG).show();
+            }
+            private void writeToFile(String data) {
+                FileOutputStream out = null;
+                try {
+                    File f = new File(Environment.getExternalStorageDirectory(), "tournament_dump.html");
+                    if (f.exists())
+                        Toast.makeText(getActivity(), "result " + f.toString(), Toast.LENGTH_LONG).show();
+                    out = new FileOutputStream(f);
+                    out.write(data.getBytes(), 0, data.length());
+                    out.close();
+                }
+                catch (IOException e) {
+                    Toast.makeText(getActivity(), "File write failed: " + e.toString(), Toast.LENGTH_LONG).show();
+                }
             }
         }
         HttpRequestsFragment() {
@@ -146,8 +188,8 @@ public class ScrapingActivity extends ActionBarActivity {
             super.onCreate(savedInstanceState);
             // headless and retained fragment to not reset on mode changes
             setRetainInstance(true);
-            CookieRetrieval retrieveCookie = new CookieRetrieval(mClient);
-            retrieveCookie.execute(getString(R.string.scraping_web_target));
+            TeamPlayerRequest retrieveCookie = new TeamPlayerRequest(mClient);
+            retrieveCookie.execute(getString(R.string.scraping_web_target_cookie));
             if (((ScrapingActivity)getActivity()).mHasFeatureProgress) {
             }
         }
