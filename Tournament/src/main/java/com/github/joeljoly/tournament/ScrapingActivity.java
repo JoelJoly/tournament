@@ -20,6 +20,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.AbstractHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -112,35 +114,44 @@ public class ScrapingActivity extends ActionBarActivity {
             }
             @Override
             protected String doInBackground(String... urls) {
-                HttpGet request = new HttpGet(urls[0]);
-                try {
-                    // execute request
-                    HttpResponse response = mClient.execute(request);
-                    // getting the first page is roughly 10% of the job
-                    publishProgress(10);
-                    int responseCode = response.getStatusLine().getStatusCode();
-                    String htmlBody = "";
-                    switch(responseCode)
+                try
+                {
+                    File f = new File(Environment.getExternalStorageDirectory(), "tournament_dump.html");
+                    if (f.exists())
                     {
-                        case 200:
-                            HttpEntity entity = response.getEntity();
-                            if(entity != null)
-                            {
-                                htmlBody = EntityUtils.toString(entity);
-                            }
-                            break;
-                        default:
-                            throw new RuntimeException("Cannot retrieve page '" +
-                                    urls[0] + "' invalid response code: " +
-                                    new Integer(responseCode).toString());
+                        Document doc = Jsoup.parse(f, "UTF-8");
                     }
-                    // TODO
-                    // job's done
-                    publishProgress(100);
-                    return htmlBody;
+                    else
+                    {
+                        HttpGet request = new HttpGet(urls[0]);
+                        // execute request
+                        HttpResponse response = mClient.execute(request);
+                        // getting the first page is roughly 10% of the job
+                        publishProgress(10);
+                        int responseCode = response.getStatusLine().getStatusCode();
+                        String htmlBody = "";
+                        switch(responseCode)
+                        {
+                            case 200:
+                                HttpEntity entity = response.getEntity();
+                                if(entity != null)
+                                {
+                                    htmlBody = EntityUtils.toString(entity);
+                                }
+                                break;
+                            default:
+                                throw new RuntimeException("Cannot retrieve page '" +
+                                        urls[0] + "' invalid response code: " +
+                                        new Integer(responseCode).toString());
+                        }
+                        // TODO
+                        // job's done
+                        publishProgress(100);
+                        return htmlBody;
+                    }
                 } catch (Exception e) {
-                    mExceptionDuringBackground = e;
-                    cancel(true);
+                        mExceptionDuringBackground = e;
+                        cancel(true);
                 }
                 return "";
             }
