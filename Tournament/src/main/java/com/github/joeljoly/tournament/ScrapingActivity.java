@@ -20,12 +20,17 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.AbstractHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.nodes.FormElement;
+import org.jsoup.select.Elements;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 
 public class ScrapingActivity extends ActionBarActivity {
 
@@ -119,7 +124,25 @@ public class ScrapingActivity extends ActionBarActivity {
                     File f = new File(Environment.getExternalStorageDirectory(), "tournament_dump.html");
                     if (f.exists())
                     {
-                        Document doc = Jsoup.parse(f, "UTF-8");
+                        f.setReadOnly();
+                        Document doc = Jsoup.parse(f, null);
+                        Elements forms = doc.select("form"); // find forms
+                        List<FormElement> selectForm = forms.forms();
+                        if (selectForm.isEmpty())
+                            throw new RuntimeException("Cannot find form.");
+                        FormElement firstForm = selectForm.get(0);
+                        String formsElementsText = "";
+                        Element lincenseNumberElement;
+                        for (Element element: firstForm.elements()) {
+                            formsElementsText = formsElementsText + element.toString();
+                            if (element.val() == "precision") {
+
+                            }
+                        }
+                        for (Connection.KeyVal keyVal : firstForm.formData()) {
+                            formsElementsText = formsElementsText + keyVal.key() + " " + keyVal.value();
+                        }
+                        return formsElementsText;
                     }
                     else
                     {
