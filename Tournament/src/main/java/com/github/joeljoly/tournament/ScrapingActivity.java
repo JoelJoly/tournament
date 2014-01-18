@@ -27,8 +27,9 @@ import org.jsoup.nodes.Element;
 import org.jsoup.nodes.FormElement;
 import org.jsoup.select.Elements;
 
+import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 
@@ -200,13 +201,12 @@ public class ScrapingActivity extends ActionBarActivity {
                     Toast.makeText(getActivity(), "Connexion error: " + mExceptionDuringBackground.getMessage(), Toast.LENGTH_LONG).show();
             }
             private void writeToFile(String data) {
-                FileOutputStream out = null;
                 try {
                     File f = new File(Environment.getExternalStorageDirectory(), "tournament_dump.html");
                     if (f.exists())
                         Toast.makeText(getActivity(), "result " + f.toString(), Toast.LENGTH_LONG).show();
-                    out = new FileOutputStream(f);
-                    out.write(data.getBytes(), 0, data.length());
+                    BufferedWriter out = new BufferedWriter(new FileWriter(f));
+                    out.write(data);
                     out.close();
                 }
                 catch (IOException e) {
