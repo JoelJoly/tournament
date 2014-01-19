@@ -1,11 +1,11 @@
 package com.github.joeljoly.tournament;
 
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBarActivity;
-import android.support.v4.app.Fragment;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,10 +27,14 @@ import org.jsoup.nodes.Element;
 import org.jsoup.nodes.FormElement;
 import org.jsoup.select.Elements;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class ScrapingActivity extends ActionBarActivity {
@@ -125,7 +129,6 @@ public class ScrapingActivity extends ActionBarActivity {
                     File f = new File(Environment.getExternalStorageDirectory(), "tournament_dump.html");
                     if (f.exists())
                     {
-                        f.setReadOnly();
                         Document doc = Jsoup.parse(f, null);
                         Elements forms = doc.select("form"); // find forms
                         List<FormElement> selectForm = forms.forms();
@@ -133,16 +136,61 @@ public class ScrapingActivity extends ActionBarActivity {
                             throw new RuntimeException("Cannot find form.");
                         FormElement firstForm = selectForm.get(0);
                         String formsElementsText = "";
-                        Element lincenseNumberElement;
+                        List<Connection.KeyVal> hiddenValues = new ArrayList<Connection.KeyVal>();
+                        HashMap<String, List<String>> radios = new HashMap<String, List<String>>();
+                        Element licenseNumberElement;
                         for (Element element: firstForm.elements()) {
                             formsElementsText = formsElementsText + element.toString();
-                            if (element.val() == "precision") {
+                            String typeAttribute = element.attr("type");
+                            final String elementName = element.attr("name");
+                            final String elementValue = element.attr("value");
+                            if (typeAttribute.equalsIgnoreCase("hidden")) {
+                                hiddenValues.add(new Connection.KeyVal() {
 
+                                    @Override
+                                    public Connection.KeyVal key(String key) {
+                                        key = elementName;
+                                        return this;
+                                    }
+
+                                    @Override
+                                    public String key() {
+                                        return elementName;
+                                    }
+
+                                    @Override
+                                    public Connection.KeyVal value(String value) {
+                                        value = elementValue;
+                                        return this;
+                                    }
+
+                                    @Override
+                                    public String value() {
+                                        return elementValue;
+                                    }
+                                });
+                            } else if (typeAttribute.equalsIgnoreCase("radio")) {
+                                String radioName = element.attr("name");
+                                List<String> radioValues = radios.get(element.attr("name"));
+                                if (radioValues == null) {
+                                    radioValues = new ArrayList<String>();
+                                    radios.put(radioName, radioValues);
+                                }
+                                radioValues.add(element.attr("value"));
                             }
                         }
                         for (Connection.KeyVal keyVal : firstForm.formData()) {
-                            formsElementsText = formsElementsText + keyVal.key() + " " + keyVal.value();
+                            formsElementsText = formsElementsText + "\n" + keyVal.key() + " " + keyVal.value();
                         }
+                        Connection formRequest = Jsoup.connect("http://www.fftt.com/sportif/pclassement/php3/FFTTfi.php3");
+                        for (Connection.KeyVal hiddenEntry : hiddenValues) {
+                            formRequest.data(hiddenEntry.key(), hiddenEntry.value());
+                        }
+                        formRequest.data("reqid", "200");
+                        formRequest.data("precision", "318919");
+                        formRequest.data("Submit", "Envoyer");
+                        Document answerDoc = formRequest.get();
+
                         return formsElementsText;
                     }
                     else
@@ -158,8 +206,7 @@ public class ScrapingActivity extends ActionBarActivity {
                         {
                             case 200:
                                 HttpEntity entity = response.getEntity();
-                                if(entity != null)
-                                {
+                                if (entity != null) {
                                     htmlBody = EntityUtils.toString(entity);
                                 }
                                 break;
@@ -169,6 +216,7 @@ public class ScrapingActivity extends ActionBarActivity {
                                         new Integer(responseCode).toString());
                         }
                         // TODO
+                        writeToFile(htmlBody);
                         // job's done
                         publishProgress(100);
                         return htmlBody;
@@ -191,7 +239,6 @@ public class ScrapingActivity extends ActionBarActivity {
             protected void onPostExecute(String result) {
                 super.onPostExecute(result);
                 Toast.makeText(getActivity(), "result " + result, Toast.LENGTH_LONG).show();
-                writeToFile(result);
             }
 
             @Override
